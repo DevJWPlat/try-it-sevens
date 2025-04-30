@@ -4,8 +4,12 @@ module.exports = {
       "./src/**/*.{js,ts,vue}"
     ],
     theme: {
-      extend: {},
+      extend: {
+        spacing: {
+          '30': '30px'
+        },
+      },
     },
     plugins: [],
   }
-  
+

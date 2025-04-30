@@ -1,0 +1,44 @@
+<script setup>
+defineProps({
+  rows: {
+    type: Array,
+    default: () => []
+  }
+})
+</script>
+
+<template>
+  <section class="space-y-4 text-center">
+    <h2 class="text-xl font-bold">Scoreboard Preview</h2>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left border border-gray-300 rounded-lg overflow-hidden">
+        <thead class="bg-gray-200 text-gray-700">
+          <tr>
+            <th class="px-4 py-2">Team</th>
+            <th class="px-4 py-2">Played</th>
+            <th class="px-4 py-2">Points</th>
+            <th class="px-4 py-2">Rank</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, i) in rows"
+            :key="i"
+            class="even:bg-gray-50 hover:bg-green-50 transition"
+          >
+            <td class="px-4 py-2 font-medium">{{ row.team }}</td>
+            <td class="px-4 py-2">{{ row.played }}</td>
+            <td class="px-4 py-2">{{ row.points }}</td>
+            <td class="px-4 py-2">{{ row.rank }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-full transition">
+      See Full Scoreboard
+    </button>
+  </section>
+</template>
+

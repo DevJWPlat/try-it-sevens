@@ -1,12 +1,11 @@
 <template>
     <DataTable
         ref="el"
+        v-bind="$props" 
         unstyled
         :pt="theme"
-        :ptOptions="{
-            mergeProps: ptViewMerge
-        }"
-    >
+        :ptOptions="{ mergeProps: ptViewMerge }"
+        >
         <template #paginatorcontainer="{ page, pageCount, pageLinks, changePageCallback, firstPageCallback, lastPageCallback, prevPageCallback, nextPageCallback }">
             <div class="flex flex-wrap gap-2 items-center justify-center">
                 <SecondaryButton text rounded @click="firstPageCallback" :disabled="page === 0">
@@ -56,7 +55,10 @@ import { ref } from 'vue';
 import SecondaryButton from './SecondaryButton.vue';
 import { ptViewMerge } from './utils';
 
-interface Props extends /* @vue-ignore */ DataTableProps {}
+interface Props extends /* @vue-ignore */ DataTableProps {
+    value: any[] // ✅ Required to bind table data
+    columns: any[] // ✅ Required to define visible columns
+}
 defineProps<Props>();
 
 const theme = ref<DataTablePassThroughOptions>({
