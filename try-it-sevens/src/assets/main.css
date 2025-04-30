@@ -1,6 +1,10 @@
 @import './base.css';
 @import "tailwindcss";
 @import "tailwindcss-primeui";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 
 
@@ -11,19 +15,12 @@
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+.wrapper {
+	max-width: 1200px;
+	width: 92%;
+	margin: 0 auto;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
 
 @media (min-width: 1024px) {
   body {
@@ -36,4 +33,12 @@ a,
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   }
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p, a {
+  font-family: "Montserrat", sans-serif;
 }
