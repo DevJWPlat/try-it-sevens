@@ -2,6 +2,27 @@
   import { ref } from 'vue'
   import { RouterLink } from 'vue-router'
   import logo from '@/assets/images/logo.svg'
+
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+
+  const route = useRoute()
+
+  const pageTitle = computed(() => {
+    switch (route.path) {
+      case '/':
+        return 'TryIt Sevens'
+      case '/scoreboard':
+        return 'Scoreboard'
+      case '/login':
+        return 'Login'
+      case '/about':
+        return 'About'
+      default:
+        return 'TryIt Sevens'
+    }
+  })
+  
   
   const isOpen = ref(false)
   const toggleMenu = () => {
@@ -16,7 +37,7 @@
           <RouterLink to="/" class="logo">
             <img :src="logo" alt="Logo" class="h-10" />
           </RouterLink>
-          <h1 class="text-xl font-bold">TryIt Sevens</h1>
+          <h1 class="text-xl font-bold">{{ pageTitle }}</h1>
           <button @click="toggleMenu" class="relative z-50 flex flex-col gap-1">
             <span
               :class="[
@@ -45,7 +66,10 @@
 
         <div class="pt-30 flex flex-col items-center justify-start space-y-6 text-xl font-semibold">
           <RouterLink to="/" @click="toggleMenu">Home</RouterLink>
-          <RouterLink to="/about" @click="toggleMenu">About</RouterLink>
+          <RouterLink to="/scoreboard" @click="toggleMenu">Scoreboard</RouterLink>
+          <RouterLink to="/games" @click="toggleMenu">Games</RouterLink>
+          <RouterLink to="/map" @click="toggleMenu">Map</RouterLink>
+          <RouterLink to="/contact" @click="toggleMenu">Contact</RouterLink>
           <RouterLink to="/fixtures" @click="toggleMenu">Fixtures</RouterLink>
         </div>
         

@@ -3,13 +3,17 @@ defineProps({
   rows: {
     type: Array,
     default: () => []
+  },
+  showButton: {
+    type: Boolean,
+    default: true
   }
 })
 </script>
 
 <template>
   <section class="space-y-4 text-center">
-    <h2 class="text-xl font-bold">Scoreboard Preview</h2>
+    <h2 class="text-xl font-bold">Scoreboard</h2>
 
     <div class="overflow-x-auto">
       <table class="min-w-full text-left border border-gray-300 rounded-lg overflow-hidden">
@@ -36,9 +40,12 @@ defineProps({
       </table>
     </div>
 
-    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-full transition">
+    <RouterLink
+      v-if="showButton"
+      to="/scoreboard"
+      class="inline-block bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded-full transition"
+    >
       See Full Scoreboard
-    </button>
+    </RouterLink>
   </section>
 </template>
-
