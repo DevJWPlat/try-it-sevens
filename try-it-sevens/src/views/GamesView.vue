@@ -1,44 +1,100 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
-
-// Mocked game data per gender and type
-const gamesData = {
-  Male: {
-    Elite: {
-      current: [
-        { teamA: 'Sharks', scoreA: 7, teamB: 'Wolves', scoreB: 0, pitch: 'Pitch 1', kickoff: 'Now' },
-        { teamA: 'Falcons', scoreA: 0, teamB: 'Rhinos', scoreB: 0, pitch: 'Pitch 2', kickoff: 'Now' },
-        { teamA: 'Otters', scoreA: 0, teamB: 'Lions', scoreB: 0, pitch: 'Pitch 3', kickoff: 'Now' }
-      ],
-      upcoming: [
-        { teamA: 'Bulls', scoreA: 0, teamB: 'Tigers', scoreB: 0, pitch: 'Pitch 1', kickoff: '13:00' },
-        { teamA: 'Wolves', scoreA: 0, teamB: 'Sharks', scoreB: 0, pitch: 'Pitch 2', kickoff: '13:30' }
-      ],
-      previous: [
-        { teamA: 'Eagles', scoreA: 3, teamB: 'Otters', scoreB: 0, pitch: 'Pitch 1', kickoff: '12:00' },
-        { teamA: 'Lions', scoreA: 0, teamB: 'Rhinos', scoreB: 0, pitch: 'Pitch 2', kickoff: '12:30' }
-      ]
-    },
-    Social: { current: [], upcoming: [], previous: [] }
-  },
-  Ladies: { default: { current: [], upcoming: [], previous: [] } },
-  Juniors: { default: { current: [], upcoming: [], previous: [] } }
-}
 
 const selectedGender = ref('Male')
 const selectedType = ref('Elite')
+
+const allGames = ref({
+  Male: {
+    Elite: [
+      {
+        teamA: 'Tigers',
+        teamB: 'Lions',
+        kickoffTime: '2025-05-02T19:30:00',
+        pitch: 'Pitch 1',
+        scoreA: 7,
+        scoreB: 0
+      },
+      {
+        teamA: 'Bulls',
+        teamB: 'Wolves',
+        kickoffTime: '2025-05-02T20:00:00',
+        pitch: 'Pitch 2',
+        scoreA: 0,
+        scoreB: 0
+      },
+      {
+        teamA: 'Jaguars',
+        teamB: 'Tryit',
+        kickoffTime: '2025-05-02T21:00:00',
+        pitch: 'Pitch 2',
+        scoreA: 0,
+        scoreB: 0
+      }
+    ],
+    Social: []
+  },
+  Ladies: {
+    default: []
+  },
+  Juniors: {
+    default: []
+  }
+})
+
+const currentGames = ref([])
+const upcomingGames = ref([])
+const previousGames = ref([])
+
+function classifyGames() {
+  const now = new Date()
+  const gender = selectedGender.value
+  const type = selectedType.value || 'default'
+  const games = allGames.value[gender]?.[type] || []
+
+  currentGames.value = []
+  upcomingGames.value = []
+  previousGames.value = []
+
+  for (const game of games) {
+    const kickoff = new Date(game.kickoffTime)
+    const diff = (kickoff - now) / 60000 // minutes
+
+    if (diff >= -5 && diff <= 20) {
+      currentGames.value.push(game)
+    } else if (diff > 5) {
+      upcomingGames.value.push(game)
+    } else if (diff < -20) {
+      previousGames.value.push(game)
+    }
+  }
+}
 
 function handleSelection({ gender, type }) {
   selectedGender.value = gender
   selectedType.value = type
 }
 
-const selectedGames = computed(() => {
-  const gender = selectedGender.value
-  const type = selectedType.value || 'default'
-  return gamesData[gender]?.[type] || { current: [], upcoming: [], previous: [] }
+function formatTime(time) {
+  return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function isNow(time) {
+  const diff = (new Date(time) - new Date()) / 1000
+  return diff >= -60 && diff <= 60
+}
+
+// Re-run on gender/type change
+watch([selectedGender, selectedType], classifyGames)
+
+// Re-run every 60s
+let timer
+onMounted(() => {
+  classifyGames()
+  timer = setInterval(classifyGames, 60000)
 })
+onUnmounted(() => clearInterval(timer))
 </script>
 
 <template>
@@ -46,29 +102,53 @@ const selectedGames = computed(() => {
     <GenderButtons @updateSelection="handleSelection" />
 
     <!-- Current Games -->
-    <section v-if="selectedGames.current.length" class="space-y-2">
-      <h2 class="text-lg font-semibold">Current Games</h2>
-      <div v-for="(game, i) in selectedGames.current" :key="i" class="bg-white shadow p-4 rounded">
-        <p class="font-bold">{{ game.teamA }} <span class="text-green-600 text-2xl">{{ game.scoreA }}</span> : <span class="text-red-600 text-2xl">{{ game.scoreB }}</span> {{ game.teamB }}</p>
-        <p class="text-sm text-gray-600">Pitch: {{ game.pitch }} | Kickoff: {{ game.kickoff }}</p>
+    <section v-if="currentGames.length" class="space-y-4">
+      <h2 class="font-bold">Current Games</h2>
+      <div
+        v-for="(game, index) in currentGames"
+        :key="index"
+        :class="['rounded-lg p-4', index === 1 ? 'bg-blue-100' : 'bg-white', 'shadow']"
+      >
+        <div class="text-center">
+          <span class="font-semibold">{{ game.teamA }}</span>
+          <span class="mx-2">{{ game.scoreA }} : {{ game.scoreB }}</span>
+          <span class="font-semibold">{{ game.teamB }}</span>
+        </div>
+        <p class="text-sm mt-2">Kickoff: {{ isNow(game.kickoffTime) ? 'Now' : formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
       </div>
     </section>
 
     <!-- Upcoming Games -->
-    <section v-if="selectedGames.upcoming.length" class="space-y-2 bg-blue-50 p-4 rounded">
-      <h2 class="text-lg font-semibold">Upcoming Games</h2>
-      <div v-for="(game, i) in selectedGames.upcoming" :key="i" class="bg-white shadow p-4 rounded">
-        <p class="font-bold">{{ game.teamA }} vs {{ game.teamB }}</p>
-        <p class="text-sm text-gray-600">Pitch: {{ game.pitch }} | Kickoff: {{ game.kickoff }}</p>
+    <section v-if="upcomingGames.length" class="space-y-4">
+      <h2 class="font-bold">Upcoming Games</h2>
+      <div
+        v-for="(game, index) in upcomingGames"
+        :key="index"
+        :class="['rounded-lg p-4', index === 1 ? 'bg-blue-100' : 'bg-gray-100', 'shadow']"
+      >
+        <div class="text-center">
+          <span class="font-semibold">{{ game.teamA }}</span>
+          <span class="mx-2">0 : 0</span>
+          <span class="font-semibold">{{ game.teamB }}</span>
+        </div>
+        <p class="text-sm mt-2">Kickoff: {{ formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
       </div>
     </section>
 
     <!-- Previous Games -->
-    <section v-if="selectedGames.previous.length" class="space-y-2">
-      <h2 class="text-lg font-semibold">Previous Games</h2>
-      <div v-for="(game, i) in selectedGames.previous" :key="i" class="bg-white shadow p-4 rounded">
-        <p class="font-bold">{{ game.teamA }} <span class="text-green-600">{{ game.scoreA }}</span> : <span class="text-red-600">{{ game.scoreB }}</span> {{ game.teamB }}</p>
-        <p class="text-sm text-gray-600">Pitch: {{ game.pitch }} | Kickoff: {{ game.kickoff }}</p>
+    <section v-if="previousGames.length" class="space-y-4">
+      <h2 class="font-bold">Previous Games</h2>
+      <div
+        v-for="(game, index) in previousGames"
+        :key="index"
+        :class="['rounded-lg p-4', index === 1 ? 'bg-blue-100' : 'bg-gray-200', 'shadow']"
+      >
+        <div class="text-center">
+          <span class="font-semibold">{{ game.teamA }}</span>
+          <span class="mx-2">{{ game.scoreA }} : {{ game.scoreB }}</span>
+          <span class="font-semibold">{{ game.teamB }}</span>
+        </div>
+        <p class="text-sm mt-2">Kickoff: {{ formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
       </div>
     </section>
   </main>

@@ -2,7 +2,7 @@
 defineProps({
   games: {
     type: Array,
-    default: () => []
+    default: () => [] 
   }
 })
 </script>
