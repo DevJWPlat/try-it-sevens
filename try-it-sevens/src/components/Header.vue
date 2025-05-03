@@ -7,7 +7,9 @@ import logo from '@/assets/images/logo.svg'
 
 const route  = useRoute()
 const router = useRouter()
-const auth   = useAuthStore()
+
+const auth = useAuthStore()
+
 
 // dynamic page title
 const pageTitle = computed(() => {

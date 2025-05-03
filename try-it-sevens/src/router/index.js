@@ -16,6 +16,8 @@ import AdminSponsorsView      from '@/views/admin/SponsorsView.vue'
 
 
 
+
+
 const routes = [
   { path: '/',           component: HomeView },
   { path: '/scoreboard', component: ScoreboardView },
@@ -26,11 +28,20 @@ const routes = [
   { path: '/super-admin', component: SuperAdminHome },
   // super-admin dashboard
   { path: '/super-admin',         component: SuperAdminHome },
-  { path: '/admin/accounts',      component: AdminAccountsView },
   { path: '/admin/teams',         component: AdminTeamsView },
   { path: '/admin/scoreboard',    component: AdminScoreboardView },
   { path: '/admin/games',         component: AdminGamePlannerView },
   { path: '/admin/sponsors',      component: AdminSponsorsView },
+  {
+    path: '/admin/accounts',
+    component: AdminAccountsView,
+    beforeEnter: (to, from, next) => {
+      const auth = useAuthStore()
+      if (!auth.loggedIn) next('/login')
+      else next()
+    }
+  },
+  
 
   // team-admin dashboard
   { path: '/team-admin',          component: TeamAdminHome },

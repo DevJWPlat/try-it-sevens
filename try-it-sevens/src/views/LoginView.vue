@@ -62,7 +62,6 @@ function submitLogin() {
 </template>
 
 
-<!-- for when we have db access
  
 <script setup>
 import { ref } from 'vue'
@@ -125,26 +124,27 @@ function submitLogin() {
  -->
 
  <!-- src/views/LoginView.vue -->
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-
-const auth   = useAuthStore()
-const router = useRouter()
-const user   = ref('')
-const pass   = ref('')
-const error  = ref('')
-
-async function submit() {
-  try {
-    await auth.signIn(user.value, pass.value)
-    router.push('/admin')      // or wherever
-  } catch (e) {
-    error.value = e.message
-  }
-}
-</script>
+ <script setup>
+ import { ref } from 'vue'
+ import { useAuthStore } from '@/stores/auth'
+ import { useRouter } from 'vue-router'
+ 
+ const auth    = useAuthStore()
+ const router  = useRouter()
+ const username = ref('')
+ const password = ref('')
+ const error    = ref('')
+ 
+ async function submit() {
+   try {
+     await auth.login(username.value, password.value)
+     router.push('/')  // or wherever
+   } catch (err) {
+     error.value = err.message
+   }
+ }
+ </script>
+ 
 
 <template>
   <main class="wrapper max-w-sm mx-auto pt-20 space-y-4">
