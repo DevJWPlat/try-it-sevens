@@ -1,4 +1,4 @@
-<!-- src/views/LoginView.vue -->
+<!--
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -122,5 +122,38 @@ function submitLogin() {
 
 
 
+ -->
 
--->
+ <!-- src/views/LoginView.vue -->
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth   = useAuthStore()
+const router = useRouter()
+const user   = ref('')
+const pass   = ref('')
+const error  = ref('')
+
+async function submit() {
+  try {
+    await auth.signIn(user.value, pass.value)
+    router.push('/admin')      // or wherever
+  } catch (e) {
+    error.value = e.message
+  }
+}
+</script>
+
+<template>
+  <main class="wrapper max-w-sm mx-auto pt-20 space-y-4">
+    <h1 class="text-2xl font-bold">Login</h1>
+    <div class="space-y-2">
+      <input v-model="user"   placeholder="Username" class="w-full p-2 border rounded"/>
+      <input v-model="pass"   type="password" placeholder="Password" class="w-full p-2 border rounded"/>
+      <button @click="submit" class="w-full bg-green-500 text-white p-2 rounded">Sign In</button>
+    </div>
+    <p v-if="error" class="text-red-600">{{ error }}</p>
+  </main>
+</template>

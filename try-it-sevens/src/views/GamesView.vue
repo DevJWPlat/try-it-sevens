@@ -1,44 +1,55 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
 import GamesList from '@/components/GamesList.vue'
+import { useGamesStore } from '@/stores/games'
 
+
+const store = useGamesStore()
 const selectedGender = ref('Male')
 const selectedType   = ref('Elite')
 
-const allGames = {
-  Male: {
-    Elite: [
-      {
-        teamA: 'Tigers',
-        teamB: 'Lions',
-        kickoffTime: '2025-05-02T19:30:00',
-        pitch: 'Pitch 1',
-        scoreA: 7,
-        scoreB: 0
-      },
-      {
-        teamA: 'Bulls',
-        teamB: 'Wolves',
-        kickoffTime: '2025-05-02T20:00:00',
-        pitch: 'Pitch 2',
-        scoreA: 0,
-        scoreB: 0
-      },
-      {
-        teamA: 'Jaguars',
-        teamB: 'Tryit',
-        kickoffTime: '2025-05-02T21:00:00',
-        pitch: 'Pitch 2',
-        scoreA: 0,
-        scoreB: 0
-      }
-    ],
-    Social: []
-  },
-  Ladies: { default: [] },
-  Juniors: { default: [] }
-}
+
+// const allGames = {
+//   Male: {
+//     Elite: [
+//       {
+//         teamA: 'Tigers',
+//         teamB: 'Lions',
+//         kickoffTime: '2025-05-02T19:30:00',
+//         pitch: 'Pitch 1',
+//         scoreA: 7,
+//         scoreB: 0
+//       },
+//       {
+//         teamA: 'Bulls',
+//         teamB: 'Wolves',
+//         kickoffTime: '2025-05-02T20:00:00',
+//         pitch: 'Pitch 2',
+//         scoreA: 0,
+//         scoreB: 0
+//       },
+//       {
+//         teamA: 'Jaguars',
+//         teamB: 'Tryit',
+//         kickoffTime: '2025-05-02T21:00:00',
+//         pitch: 'Pitch 2',
+//         scoreA: 0,
+//         scoreB: 0
+//       }
+//     ],
+//     Social: []
+//   },
+//   Ladies: { default: [] },
+//   Juniors: { default: [] }
+// }
+
+watch([selectedGender, selectedType], () => {
+  store.fetchByCategory(selectedGender.value, selectedType.value)
+})
+onMounted(() => {
+  store.fetchByCategory(selectedGender.value, selectedType.value)
+})
 
 const currentGames  = ref([])
 const upcomingGames = ref([])
@@ -92,7 +103,7 @@ function isNow(time) {
 <template>
   <main class="wrapper pt-20 space-y-10">
     <GenderButtons @updateSelection="handleSelection" />
-
+    <GamesList :games="store.list" title="All Games" highlightSecond />
     <!-- Current Games -->
     <section v-if="currentGames.length" class="space-y-4">
       <h2 class="font-bold">Current Games</h2>

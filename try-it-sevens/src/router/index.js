@@ -25,7 +25,7 @@ const routes = [
   { path: '/login',       component: LoginView },
   { path: '/super-admin', component: SuperAdminHome },
   // super-admin dashboard
-  { path: '/super-admin',               component: SuperAdminHome },
+  { path: '/super-admin',         component: SuperAdminHome },
   { path: '/admin/accounts',      component: AdminAccountsView },
   { path: '/admin/teams',         component: AdminTeamsView },
   { path: '/admin/scoreboard',    component: AdminScoreboardView },
@@ -33,10 +33,10 @@ const routes = [
   { path: '/admin/sponsors',      component: AdminSponsorsView },
 
   // team-admin dashboard
-  { path: '/team-admin',          component: AdminHome },
+  { path: '/team-admin',          component: TeamAdminHome },
 
   // dmin dashboard
-  { path: '/admin',          component: TeamAdminHome },
+  { path: '/admin',          component: AdminHome },
   { 
     path: '/team/:team', 
     component: () => import('@/views/TeamView.vue') 
