@@ -1,4 +1,6 @@
 <script setup>
+import { RouterLink } from 'vue-router'
+
 defineProps({
   rows: {
     type: Array,
@@ -31,7 +33,11 @@ defineProps({
             :key="i"
             class="even:bg-gray-50 hover:bg-green-50 transition"
           >
-            <td class="px-4 py-2 font-medium">{{ row.team }}</td>
+            <td class="px-4 py-2">
+              <RouterLink :to="`/team/${row.team}`" class="text-blue-600 hover:underline">
+                {{ row.team }}
+              </RouterLink>
+            </td>
             <td class="px-4 py-2">{{ row.played }}</td>
             <td class="px-4 py-2">{{ row.points }}</td>
             <td class="px-4 py-2">{{ row.rank }}</td>
