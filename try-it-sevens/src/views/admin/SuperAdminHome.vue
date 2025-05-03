@@ -50,12 +50,12 @@ function clearAll() {
       Game Planner
     </button>
 
-    <button
+    <!-- <button
       @click="go('/admin/sponsors')"
       class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
     >
       Manage Sponsors
-    </button>
+    </button> -->
 
     <hr class="my-4"/>
 

@@ -1,6 +1,7 @@
 <!-- src/views/admin/AccountsView.vue -->
 <script setup>
 import { ref, reactive, watch } from 'vue'
+import Breadcrumbs from '@/components/AdminBreadcrumbs.vue'
 
 // Mock account data
 const accounts = ref([
@@ -86,6 +87,7 @@ function toggleFormPassword() {
 
 <template>
   <div class="wrapper pt-20 max-w-4xl mx-auto">
+    <Breadcrumbs />
     <div class="flex justify-between mb-4">
       <button @click="openAddModal" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
         Add User

@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
+import GamesList from '@/components/GamesList.vue'
 
 const selectedGender = ref('Male')
-const selectedType = ref('Elite')
+const selectedType   = ref('Elite')
 
-const allGames = ref({
+const allGames = {
   Male: {
     Elite: [
       {
@@ -35,66 +36,57 @@ const allGames = ref({
     ],
     Social: []
   },
-  Ladies: {
-    default: []
-  },
-  Juniors: {
-    default: []
-  }
-})
+  Ladies: { default: [] },
+  Juniors: { default: [] }
+}
 
-const currentGames = ref([])
+const currentGames  = ref([])
 const upcomingGames = ref([])
 const previousGames = ref([])
 
 function classifyGames() {
-  const now = new Date()
+  const now    = new Date()
   const gender = selectedGender.value
-  const type = selectedType.value || 'default'
-  const games = allGames.value[gender]?.[type] || []
+  const type   = selectedType.value || 'default'
+  const list   = allGames[gender]?.[type] || []
 
-  currentGames.value = []
+  currentGames.value  = []
   upcomingGames.value = []
   previousGames.value = []
 
-  for (const game of games) {
+  for (const game of list) {
     const kickoff = new Date(game.kickoffTime)
-    const diff = (kickoff - now) / 60000 // minutes
+    const diff    = (kickoff - now) / 60000 // in minutes
 
-    if (diff >= -5 && diff <= 20) {
-      currentGames.value.push(game)
-    } else if (diff > 5) {
-      upcomingGames.value.push(game)
-    } else if (diff < -20) {
-      previousGames.value.push(game)
-    }
+    if (diff >= -5 && diff <= 20)      currentGames.value.push(game)
+    else if (diff > 5)                 upcomingGames.value.push(game)
+    else if (diff < -20)               previousGames.value.push(game)
   }
 }
 
-function handleSelection({ gender, type }) {
-  selectedGender.value = gender
-  selectedType.value = type
-}
-
-function formatTime(time) {
-  return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function isNow(time) {
-  const diff = (new Date(time) - new Date()) / 1000
-  return diff >= -60 && diff <= 60
-}
-
-// Re-run on gender/type change
 watch([selectedGender, selectedType], classifyGames)
 
-// Re-run every 60s
 let timer
 onMounted(() => {
   classifyGames()
   timer = setInterval(classifyGames, 60000)
 })
 onUnmounted(() => clearInterval(timer))
+
+function handleSelection({ gender, type }) {
+  selectedGender.value = gender
+  selectedType.value   = type
+}
+
+function formatTime(time) {
+  return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+// show “Now” if within a minute
+function isNow(time) {
+  const diff = (new Date(time) - new Date()) / 1000
+  return diff >= -60 && diff <= 60
+}
 </script>
 
 <template>
@@ -114,7 +106,11 @@ onUnmounted(() => clearInterval(timer))
           <span class="mx-2">{{ game.scoreA }} : {{ game.scoreB }}</span>
           <span class="font-semibold">{{ game.teamB }}</span>
         </div>
-        <p class="text-sm mt-2">Kickoff: {{ isNow(game.kickoffTime) ? 'Now' : formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
+        <p class="text-sm mt-2">
+          Kickoff:
+          {{ isNow(game.kickoffTime) ? 'Now' : formatTime(game.kickoffTime) }}
+          – {{ game.pitch }}
+        </p>
       </div>
     </section>
 
@@ -131,7 +127,9 @@ onUnmounted(() => clearInterval(timer))
           <span class="mx-2">0 : 0</span>
           <span class="font-semibold">{{ game.teamB }}</span>
         </div>
-        <p class="text-sm mt-2">Kickoff: {{ formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
+        <p class="text-sm mt-2">
+          Kickoff: {{ formatTime(game.kickoffTime) }} – {{ game.pitch }}
+        </p>
       </div>
     </section>
 
@@ -148,7 +146,9 @@ onUnmounted(() => clearInterval(timer))
           <span class="mx-2">{{ game.scoreA }} : {{ game.scoreB }}</span>
           <span class="font-semibold">{{ game.teamB }}</span>
         </div>
-        <p class="text-sm mt-2">Kickoff: {{ formatTime(game.kickoffTime) }} - {{ game.pitch }}</p>
+        <p class="text-sm mt-2">
+          Kickoff: {{ formatTime(game.kickoffTime) }} – {{ game.pitch }}
+        </p>
       </div>
     </section>
   </main>

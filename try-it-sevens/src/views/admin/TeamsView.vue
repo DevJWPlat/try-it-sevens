@@ -2,6 +2,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import Breadcrumbs from '@/components/AdminBreadcrumbs.vue'
 
 const router = useRouter()
 
@@ -52,7 +53,7 @@ function submitForm() {
 <template>
   <main class="wrapper pt-20 max-w-md mx-auto space-y-8">
     <!-- Header / breadcrumb -->
-    <h1 class="text-2xl font-bold text-center">Admin Dashboard / Teams</h1>
+    <Breadcrumbs />
 
     <!-- Team form -->
     <form @submit.prevent="submitForm" class="space-y-6">

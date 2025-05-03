@@ -2,6 +2,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
+import Breadcrumbs from '@/components/AdminBreadcrumbs.vue'
 
 // Selected gender & type
 const selectedGender = ref('Male')
@@ -72,11 +73,12 @@ function handleSelection({ gender, type }) {
 
 <template>
   <main class="wrapper pt-20 max-w-md mx-auto space-y-6">
+    <!-- page heading -->
+    <Breadcrumbs />
+    
     <!-- pick Male/Ladies/Juniors + Elite/Social -->
     <GenderButtons @updateSelection="handleSelection" />
 
-    <!-- page heading -->
-    <h1 class="text-2xl font-bold">Admin Dashboard / Scoreboard</h1>
 
     <!-- Edit button -->
     <button

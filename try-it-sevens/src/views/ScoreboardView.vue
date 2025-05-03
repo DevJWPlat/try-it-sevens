@@ -5,7 +5,7 @@ import ScoreboardPreview from '@/components/ScoreboardPreview.vue'
 
 // Default selection
 const selectedGender = ref('Male')
-const selectedType = ref('Elite')
+const selectedType   = ref('Elite')
 
 // Full scoreboard data
 const allTables = {
@@ -41,15 +41,16 @@ const allTables = {
   }
 }
 
+// compute only the slice we need
 const tableRows = computed(() => {
   const gender = selectedGender.value
-  const type = selectedType.value || 'default'
+  const type   = selectedType.value || 'default'
   return allTables[gender]?.[type] || []
 })
 
 function handleSelection({ gender, type }) {
   selectedGender.value = gender
-  selectedType.value = type
+  selectedType.value   = type
 }
 </script>
 
@@ -58,8 +59,10 @@ function handleSelection({ gender, type }) {
     <!-- Gender Selection -->
     <GenderButtons @updateSelection="handleSelection" />
 
-    <!-- Full Table -->
-    <ScoreboardPreview :rows="tableRows" :showButton="false" />
+    <!-- Full Table (no button) -->
+    <ScoreboardPreview
+      :rows="tableRows"
+      :showButton="false"
+    />
   </main>
 </template>
-
