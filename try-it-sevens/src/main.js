@@ -7,20 +7,33 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { useAuthStore } from '@/stores/auth'
 
-const app = createApp(App)
-const pinia = createPinia()
+async function bootstrap() {
+  const pinia = createPinia()
+  const app   = createApp(App)
+  app.use(pinia)
+  app.use(router)
+  app.use(PrimeVue, {
+    unstyled: true,
+  })
 
+  // restore any existing session
+  const auth = useAuthStore()
+  await auth.restore()
 
+  app.mount('#app')
+}
 
-app.use(pinia)
-app.use(createPinia())
-app.use(router)
-app.use(PrimeVue, {
-  unstyled: true,
-})
+// app.use(pinia)
+// app.use(createPinia())
+// app.use(router)
+// app.use(PrimeVue, {
+//   unstyled: true,
+// })
 
-app.mount('#app')
+// app.mount('#app')
 
-const auth = useAuthStore()
-// auth.init()
-auth.restore()
+// const auth = useAuthStore()
+// // auth.init()
+// auth.restore()
+
+bootstrap()

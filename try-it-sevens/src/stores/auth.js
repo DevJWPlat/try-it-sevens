@@ -1,52 +1,50 @@
-// auth.js
+// src/stores/auth.js
 import { defineStore } from 'pinia'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabase'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,        // the full row from your "users" table
-    loggedIn: false,
-    role: null,        // e.g. "Super Admin" | "Admin" | "Team Admin"
+    user: null,
+    loggedIn: false
   }),
   actions: {
+    /**  
+     * Try to pick up an existing session on page‐load  
+     */
+    async restore() {
+      // supabase v2: getSession returns { data: { session }, error }
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (!error && session) {
+        this.user     = session.user
+        this.loggedIn = true
+      }
+    },
+
+    /**  
+     * Our custom “login with username/password”  
+     */
     async login(username, password) {
-      // fetch the row matching both username & password
+      // pull your user row out of `app_users`
       const { data, error } = await supabase
-        .from('users')
-        .select('id, username, role')
+        .from('app_users')
+        .select('*')
         .eq('username', username)
-        .eq('password', password)
         .single()
 
-      if (error) {
-        throw new Error(error.message || 'Login failed')
+      if (error || !data) {
+        throw new Error('Unknown username')
+      }
+      if (data.password !== password) {
+        throw new Error('Incorrect password')
       }
 
-      // store it in the Pinia state
       this.user     = data
-      this.role     = data.role
       this.loggedIn = true
-
-      // optionally persist to localStorage
-      localStorage.setItem('user', JSON.stringify(data))
     },
 
     logout() {
       this.user     = null
-      this.role     = null
       this.loggedIn = false
-      localStorage.removeItem('user')
-    },
-
-    restore() {
-      // call this on app startup to rehydrate from localStorage
-      const saved = localStorage.getItem('user')
-      if (saved) {
-        const data = JSON.parse(saved)
-        this.user     = data
-        this.role     = data.role
-        this.loggedIn = true
-      }
     }
   }
 })

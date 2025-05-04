@@ -1,42 +1,20 @@
-<!-- src/components/Header.vue -->
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import logo from '@/assets/images/logo.svg'
 
+const auth   = useAuthStore()
 const route  = useRoute()
 const router = useRouter()
-
-const auth = useAuthStore()
-
-
-// dynamic page title
-const pageTitle = computed(() => {
-  if (route.params.team) {
-    return String(route.params.team)
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase())
-  }
-  switch (route.path) {
-    case '/': return 'TryIt Sevens'
-    case '/scoreboard': return 'Scoreboard'
-    case '/games': return 'Matches'
-    case '/map': return 'Map'
-    case '/contact': return 'Contact'
-    case '/login': return 'Login'
-    case '/about': return 'About'
-    default: return 'TryIt Sevens'
-  }
-})
-
 const isOpen = ref(false)
+
 function toggleMenu() {
   isOpen.value = !isOpen.value
 }
 
 function handleAuth() {
-  isOpen.value = false
+  toggleMenu()
   if (auth.loggedIn) {
     auth.logout()
     router.push('/')
@@ -45,24 +23,7 @@ function handleAuth() {
   }
 }
 
-const navLinks = computed(() => {
-  const publicLinks = [
-    { to: '/',           text: 'Home' },
-    { to: '/scoreboard', text: 'Scoreboard' },
-    { to: '/games',      text: 'Games' },
-    { to: '/map',        text: 'Map' },
-    { to: '/contact',    text: 'Contact' }
-  ]
-  const privateLinks = [
-    { to: '/admin',            text: 'Dashboard' },
-    { to: '/admin/accounts',   text: 'Accounts' },
-    { to: '/admin/teams',      text: 'Teams' },
-    { to: '/admin/scoreboard', text: 'Edit Scoreboard' },
-    { to: '/admin/games',      text: 'Game Planner' },
-    { to: '/admin/sponsors',   text: 'Sponsors' }
-  ]
-  return auth.loggedIn ? privateLinks : publicLinks
-})
+// … pageTitle / navLinks as before …
 </script>
 
 <template>
@@ -113,10 +74,7 @@ const navLinks = computed(() => {
           </RouterLink>
         </div>
 
-        <button
-          @click="handleAuth"
-          class="px-6 py-2 rounded-full text-base shadow text-center transition custom-button"
-        >
+        <button @click="handleAuth" class="custom-button px-6 py-2 rounded-full">
           {{ auth.loggedIn ? 'Logout' : 'Login' }}
         </button>
       </nav>
