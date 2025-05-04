@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
 import ScoreboardPreview from '@/components/ScoreboardPreview.vue'
 import { useScoreboardStore } from '@/stores/scoreboard'

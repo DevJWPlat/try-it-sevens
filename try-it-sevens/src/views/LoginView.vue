@@ -4,10 +4,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-import { supabase }       from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
+
 
 const auth     = useAuthStore()
-const router   = useRouter()
 const username = ref('')
 const password = ref('')
 const error    = ref('')
@@ -22,20 +22,49 @@ async function handleSubmit() {
   }
 }
 
-async function testFetchAllUsers() {
+// async function testFetchAllUsers() {
+//   const { data, error } = await supabase
+//     .from('app_users')
+//     .select('*')
+
+//   console.log('SUPABASE TEST:', { data, error })
+// }
+
+// onMounted(async () => {
+//   const { data, error } = await supabase
+//     .from('app_users')
+//     .select('*')
+//   console.log('DB TEST:', { data, error })
+// })
+
+const router = useRouter()
+
+const login = async () => {
   const { data, error } = await supabase
     .from('app_users')
     .select('*')
+    .eq('username', username.value)
+    .eq('password', password.value)
+    .single()
 
-  console.log('SUPABASE TEST:', { data, error })
+  if (error || !data) {
+    alert('Invalid login')
+    return
+  }
+
+  auth.login(data) // save the logged-in user
+
+  // Redirect based on access level
+  if (data.access === 'super') {
+    router.push('/super-admin')
+  } else if (data.access === 'admin') {
+    router.push('/admin')
+  } else if (data.access === 'team') {
+    router.push('/team-admin')
+  } else {
+    router.push('/admin') // fallback
+  }
 }
-
-onMounted(async () => {
-  const { data, error } = await supabase
-    .from('app_users')
-    .select('*')
-  console.log('DB TEST:', { data, error })
-})
 
 </script>
 
@@ -44,7 +73,7 @@ onMounted(async () => {
     <h1 class="text-2xl font-bold">Login</h1>
     <p v-if="error" class="text-red-600">{{ error }}</p>
 
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <form @submit.prevent="login" class="space-y-4">
       <label class="block">
         <span>Username</span>
         <input v-model="username" required class="mt-1 block w-full border rounded p-2" />

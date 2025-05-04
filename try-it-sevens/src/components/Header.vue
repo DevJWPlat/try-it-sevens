@@ -16,14 +16,53 @@ function toggleMenu() {
 function handleAuth() {
   toggleMenu()
   if (auth.loggedIn) {
-    auth.logout()
-    router.push('/')
+    if (confirm('Are you sure you want to log out?')) {
+      auth.logout()
+      router.push('/')
+    }
   } else {
     router.push('/login')
   }
 }
 
-// … pageTitle / navLinks as before …
+const pageTitle = computed(() => {
+  if (route.params.team) {
+    return String(route.params.team)
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase())
+  }
+  switch (route.path) {
+    case '/': return 'TryIt Sevens'
+    case '/scoreboard': return 'Scoreboard'
+    case '/games': return 'Matches'
+    case '/map': return 'Map'
+    case '/contact': return 'Contact'
+    case '/login': return 'Login'
+    case '/about': return 'About'
+    default: return 'TryIt Sevens'
+  }
+})
+
+const navLinks = computed(() => {
+  const publicLinks = [
+    { to: '/',           text: 'Home' },
+    { to: '/scoreboard', text: 'Scoreboard' },
+    { to: '/games',      text: 'Games' },
+    { to: '/map',        text: 'Map' },
+    { to: '/contact',    text: 'Contact' }
+  ]
+
+  const privateLinks = [
+    { to: '/admin',            text: 'Dashboard' },
+    { to: '/admin/accounts',   text: 'Accounts' },
+    { to: '/admin/teams',      text: 'Teams' },
+    { to: '/admin/scoreboard', text: 'Edit Scoreboard' },
+    { to: '/admin/games',      text: 'Game Planner' },
+    { to: '/admin/sponsors',   text: 'Sponsors' }
+  ]
+
+  return auth.loggedIn ? privateLinks : publicLinks
+})
 </script>
 
 <template>

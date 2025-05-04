@@ -1,6 +1,6 @@
 <!-- src/views/admin/ScoreboardView.vue -->
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import GenderButtons from '@/components/GenderButtons.vue'
 import Breadcrumbs from '@/components/AdminBreadcrumbs.vue'
 

@@ -5,35 +5,22 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
+
+// Create app and store
+const app = createApp(App)
+const pinia = createPinia()
+app.use(pinia)
+
+// Import store *after* Pinia is ready
 import { useAuthStore } from '@/stores/auth'
 
-async function bootstrap() {
-  const pinia = createPinia()
-  const app   = createApp(App)
-  app.use(pinia)
-  app.use(router)
-  app.use(PrimeVue, {
-    unstyled: true,
-  })
+// Restore user session before mounting
+const auth = useAuthStore()
+auth.restore()
 
-  // restore any existing session
-  const auth = useAuthStore()
-  await auth.restore()
+// Use plugins
+app.use(router)
+app.use(PrimeVue, { unstyled: true })
 
-  app.mount('#app')
-}
-
-// app.use(pinia)
-// app.use(createPinia())
-// app.use(router)
-// app.use(PrimeVue, {
-//   unstyled: true,
-// })
-
-// app.mount('#app')
-
-// const auth = useAuthStore()
-// // auth.init()
-// auth.restore()
-
-bootstrap()
+// Mount app
+app.mount('#app')
