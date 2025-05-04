@@ -19,12 +19,12 @@ import AdminGamePlannerView   from '@/views/admin/GamePlannerView.vue'
 import AdminSponsorsView      from '@/views/admin/SponsorsView.vue'
 
 // Helper for role-based guards
-function requireAccess(level) {
+function requireAccess(...allowedRoles) {
   return (to, from, next) => {
     const auth = useAuthStore()
     if (!auth.loggedIn) return next('/login')
-    if (auth.user?.access === level) return next()
-    return next('/') // redirect home if not allowed
+    if (allowedRoles.includes(auth.user?.access)) return next()
+    return next('/')
   }
 }
 const routes = [
@@ -44,7 +44,7 @@ const routes = [
   { path: '/admin',             component: AdminHome, beforeEnter: requireAccess('admin') },
   { path: '/admin/teams',       component: AdminTeamsView, beforeEnter: requireAccess('admin') },
   { path: '/admin/scoreboard',  component: AdminScoreboardView, beforeEnter: requireAccess('admin') },
-  { path: '/admin/games',       component: AdminGamePlannerView, beforeEnter: requireAccess('admin') },
+  { path: '/admin/games',       component: AdminGamePlannerView, beforeEnter: requireAccess('admin', 'super') },
   { path: '/admin/sponsors',    component: AdminSponsorsView, beforeEnter: requireAccess('admin') },
 
   // Team Admin

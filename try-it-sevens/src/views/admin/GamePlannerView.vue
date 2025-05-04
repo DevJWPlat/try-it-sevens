@@ -273,4 +273,4 @@ function deleteGame() {
 
 <style scoped>
 /* nothing extra for now */
-</style>
+</style> 
