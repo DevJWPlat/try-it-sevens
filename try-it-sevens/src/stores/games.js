@@ -1,21 +1,38 @@
 import { defineStore } from 'pinia'
-import { supabase } from '@/lib/supabaseClient'
+import { ref } from 'vue'
+import { supabase } from '@/lib/supabase'
 
-export const useGamesStore = defineStore('games', {
-  state: () => ({
-    list: []
-  }),
-  actions: {
-    async fetchByCategory(gender, type = 'default') {
-      const { data, error } = await supabase
-        .from('games')
-        .select(`*, team_a:team_a_id(name, logo_url), team_b:team_b_id(name, logo_url)`)
-        .eq('gender', gender)
-        .eq('type', type)
-        .order('kickoff_time', { ascending: true })
+export const useGamesStore = defineStore('games', () => {
+  const list = ref([])
 
-      if (error) throw error
-      this.list = data
+  async function fetchByCategory(gender, type) {
+    const { data: games, error: gamesError } = await supabase
+      .from('games')
+      .select('*')
+      .eq('gender', gender)
+      .eq('type', type || 'default')
+
+    const { data: teams, error: teamsError } = await supabase
+      .from('teams')
+      .select('id, name')
+
+    if (gamesError || teamsError) {
+      console.error('Failed to load games or teams:', gamesError || teamsError)
+      list.value = []
+      return
     }
+
+    // Map UUIDs to team names
+    const teamMap = Object.fromEntries(teams.map(t => [t.id, t.name]))
+
+    list.value = games.map(g => ({
+      ...g,
+      teamA: teamMap[g.team_a_id] || 'Unknown A',
+      teamB: teamMap[g.team_b_id] || 'Unknown B',
+      kickoffTime: g.kickoff_time // alias to match component expectations
+    }))
   }
+
+  return { list, fetchByCategory }
 })
+

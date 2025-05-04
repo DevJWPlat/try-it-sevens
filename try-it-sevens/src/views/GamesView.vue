@@ -104,6 +104,7 @@ function isNow(time) {
   <main class="wrapper pt-20 space-y-10">
     <GenderButtons @updateSelection="handleSelection" />
     <GamesList :games="store.list" title="All Games" highlightSecond />
+
     <!-- Current Games -->
     <section v-if="currentGames.length" class="space-y-4">
       <h2 class="font-bold">Current Games</h2>
