@@ -46,7 +46,8 @@ const form = reactive({
   score_b: 0,
   kickoff_time: '',
   pitch: 1,
-  date: ''
+  date: '',
+  is_complete: false
 })
 
 function openAdd() {
@@ -61,7 +62,8 @@ function openAdd() {
     score_b: 0,
     kickoff_time: '',
     pitch: 1,
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    is_complete: false
   })
   showEdit.value = true
 }
@@ -69,12 +71,67 @@ function openAdd() {
 function openEditGame(game) {
   isEditing.value = true
   Object.assign(form, game)
+  // Split kickoff_time into date and time
+  const [date, time] = game.kickoff_time.split('T')
+  form.date = date
+  form.kickoff_time = time?.slice(0, 5) || ''
   showEdit.value = true
 }
 
 function closeEdit() {
   showEdit.value = false
   showDeleteConfirm.value = false
+}
+
+async function updateScoreboardOnComplete(game) {
+  const { team_a_id, team_b_id, score_a, score_b, type } = game
+
+  const points = score_a > score_b
+    ? { [team_a_id]: 3, [team_b_id]: 1 }
+    : score_a < score_b
+    ? { [team_b_id]: 3, [team_a_id]: 1 }
+    : { [team_a_id]: 2, [team_b_id]: 2 }
+
+  const updates = []
+
+  for (const [teamId, pts] of Object.entries(points)) {
+    const { data: existing } = await supabase
+      .from('scoreboard')
+      .select('*')
+      .eq('team_id', teamId)
+      .eq('type', type)
+      .single()
+
+    if (existing) {
+      updates.push(
+        supabase
+          .from('scoreboard')
+          .update({
+            played: existing.played + 1,
+            points: existing.points + pts,
+            wins: existing.wins + (pts === 3 ? 1 : 0),
+            draws: existing.draws + (pts === 2 ? 1 : 0),
+            losses: existing.losses + (pts === 1 ? 1 : 0)
+          })
+          .eq('team_id', teamId)
+          .eq('type', type)
+      )
+    } else {
+      updates.push(
+        supabase.from('scoreboard').insert([{
+          team_id: teamId,
+          type,
+          played: 1,
+          points: pts,
+          wins: pts === 3 ? 1 : 0,
+          draws: pts === 2 ? 1 : 0,
+          losses: pts === 1 ? 1 : 0
+        }])
+      )
+    }
+  }
+
+  await Promise.all(updates)
 }
 
 async function saveGame() {
@@ -87,13 +144,19 @@ async function saveGame() {
     score_b: form.score_b,
     kickoff_time: `${form.date}T${form.kickoff_time}`,
     date: form.date,
-    pitch: form.pitch
+    pitch: form.pitch,
+    is_complete: form.is_complete
   }
 
   if (isEditing.value) {
     await supabase.from('games').update(payload).eq('id', form.id)
   } else {
-    await supabase.from('games').insert([payload])
+    const { data } = await supabase.from('games').insert([payload]).select().single()
+    form.id = data?.id
+  }
+
+  if (form.is_complete) {
+    await updateScoreboardOnComplete({ ...form })
   }
 
   await fetchData()
@@ -199,7 +262,12 @@ onMounted(fetchData)
           </label>
         </div>
 
-        <div class="flex justify-end gap-2">
+        <label class="block mt-2">
+          <input type="checkbox" v-model="form.is_complete" class="mr-2" />
+          Mark game as complete
+        </label>
+
+        <div class="flex justify-end gap-2 mt-4">
           <button @click="saveGame" class="bg-green-600 text-white px-4 py-2 rounded">Save</button>
           <button v-if="isEditing" @click="showDeleteConfirm = true" class="bg-red-600 text-white px-4 py-2 rounded">
             Delete
@@ -220,5 +288,5 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
-/* nothing extra for now */
+/* nothing extra */
 </style>

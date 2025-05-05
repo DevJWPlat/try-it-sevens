@@ -1,3 +1,4 @@
+// stores/games.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
@@ -22,17 +23,15 @@ export const useGamesStore = defineStore('games', () => {
       return
     }
 
-    // Map UUIDs to team names
     const teamMap = Object.fromEntries(teams.map(t => [t.id, t.name]))
 
     list.value = games.map(g => ({
       ...g,
       teamA: teamMap[g.team_a_id] || 'Unknown A',
       teamB: teamMap[g.team_b_id] || 'Unknown B',
-      kickoffTime: g.kickoff_time // alias to match component expectations
+      kickoffTime: g.kickoff_time
     }))
   }
 
   return { list, fetchByCategory }
 })
-

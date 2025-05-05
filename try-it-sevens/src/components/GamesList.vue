@@ -35,13 +35,16 @@ function formatTime(t) {
         <RouterLink :to="`/team/${g.teamA}`" class="text-blue-600 font-semibold hover:underline">
           {{ g.teamA }}
         </RouterLink>
-        <span class="mx-2">{{ g.scoreA }} : {{ g.scoreB }}</span>
+        <span class="mx-2">{{ g.scoreA ?? 0 }} : {{ g.scoreB ?? 0 }}</span>
         <RouterLink :to="`/team/${g.teamB}`" class="text-blue-600 font-semibold hover:underline">
           {{ g.teamB }}
         </RouterLink>
       </div>
       <p class="text-sm mt-2">
-        Kickoff: {{ formatTime(g.kickoffTime) }} – {{ g.pitch }}
+        Kickoff: {{ formatTime(g.kickoffTime) }} | Pitch: {{ g.pitch }}
+      </p>
+      <p class="text-sm mt-2">
+        Date: {{ g.date }}
       </p>
     </div>
   </section>
