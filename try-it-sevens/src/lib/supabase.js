@@ -17,5 +17,3 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 )
 
-const session = await supabase.auth.getSession()
-console.log('Session:', session)

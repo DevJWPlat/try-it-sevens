@@ -1,27 +1,27 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-const emit = defineEmits(['updateSelection'])
+import { computed } from 'vue'
 
-const selectedGender = ref('Male')      // default on load
-const selectedType = ref('Elite')       // default on load
-const showTypes = ref(true)             // only for Male
-
-// Emit on changes
-watch([selectedGender, selectedType], () => {
-  emit('updateSelection', {
-    gender: selectedGender.value,
-    type: selectedType.value
-  })
+const props = defineProps({
+  selectedGender: String,
+  selectedType: String
 })
 
-const selectGender = (gender) => {
-  selectedGender.value = gender
-  showTypes.value = gender === 'Male'
-  selectedType.value = showTypes.value ? 'Elite' : 'default'
+const emit = defineEmits(['updateSelection'])
+
+const showTypes = computed(() => props.selectedGender === 'Male')
+
+function selectGender(gender) {
+  emit('updateSelection', {
+    gender,
+    type: gender === 'Male' ? 'Elite' : 'default'
+  })
 }
 
-const selectType = (type) => {
-  selectedType.value = type
+function selectType(type) {
+  emit('updateSelection', {
+    gender: props.selectedGender,
+    type
+  })
 }
 </script>
 

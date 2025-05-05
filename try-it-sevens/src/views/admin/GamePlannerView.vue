@@ -100,7 +100,7 @@ async function updateScoreboardOnComplete(game) {
       .select('*')
       .eq('team_id', teamId)
       .eq('type', type)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       updates.push(
