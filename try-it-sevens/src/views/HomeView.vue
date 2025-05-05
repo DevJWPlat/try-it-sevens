@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import GenderButtons from '@/components/GenderButtons.vue'
 import ScoreboardPreview from '@/components/ScoreboardPreview.vue'
@@ -15,9 +15,9 @@ const gamesStore = useGamesStore()
 const scoreboardStore = useScoreboardStore()
 
 const selectedGender = ref('Male')
-const selectedType = ref('Elite')
+const selectedType   = ref('Elite')
 
-const currentGames = ref([])
+const currentGames  = ref([])
 const upcomingGames = ref([])
 const previousGames = ref([])
 
@@ -25,7 +25,7 @@ function classifyGames() {
   const now = new Date()
   const games = gamesStore.list.filter(g =>
     g.gender === selectedGender.value &&
-    (g.type || 'default') === (selectedType.value || 'default')
+    (g.type || 'All') === selectedType.value
   )
 
   currentGames.value = []
@@ -34,29 +34,33 @@ function classifyGames() {
 
   for (const g of games) {
     const kickoff = new Date(`${g.date}T${g.kickoff_time}`)
-    const diff = (kickoff - now) / 60000
-
+    const diff     = (kickoff - now) / 60000
     if (diff >= -5 && diff <= 20) currentGames.value.push(g)
-    else if (diff > 5) upcomingGames.value.push(g)
-    else if (diff < -20) previousGames.value.push(g)
+    else if (diff > 5)            upcomingGames.value.push(g)
+    else if (diff < -20)           previousGames.value.push(g)
   }
 }
 
-function handleSelection({ gender, type }) {
+async function handleSelection({ gender, type }) {
+  console.log('[handleSelection] selecting →', { gender, type })
   selectedGender.value = gender
-  selectedType.value = type
-  gamesStore.fetchByCategory(gender, type)
-  scoreboardStore.fetchByCategory(gender, type)
+  selectedType.value   = type
+
+  try {
+    await gamesStore.fetchByCategory(gender, type)
+    console.log('[handleSelection] selecting →', { gender, type })
+    await scoreboardStore.fetchByCategory(gender, type)
+    console.log('[handleSelection] scoreboard fetched →', scoreboardStore.table)
+  } catch (err) {
+    console.error(err)
+  }
+
   classifyGames()
 }
 
-watch([selectedGender, selectedType], handleSelection)
-
 let timer
 onMounted(async () => {
-  await gamesStore.fetchByCategory(selectedGender.value, selectedType.value)
-  await scoreboardStore.fetchByCategory(selectedGender.value, selectedType.value)
-  classifyGames()
+  await handleSelection({ gender: selectedGender.value, type: selectedType.value })
   timer = setInterval(classifyGames, 60000)
 })
 onUnmounted(() => clearInterval(timer))

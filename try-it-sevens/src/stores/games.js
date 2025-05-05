@@ -1,3 +1,4 @@
+// stores/games.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
@@ -5,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 export const useGamesStore = defineStore('games', () => {
   const list = ref([])
 
-  // Unified fetch for filtered games by gender/type
+  // Base fetch: filters by gender + type
   async function fetchGames({ gender = 'All', type = 'All' } = {}) {
     let query = supabase
       .from('games')
@@ -32,12 +33,24 @@ export const useGamesStore = defineStore('games', () => {
 
     list.value = (games || []).map(g => ({
       ...g,
-      teamA:       teamMap[g.team_a_id]       || 'Unknown A',
-      teamB:       teamMap[g.team_b_id]       || 'Unknown B',
+      teamA:       teamMap[g.team_a_id] || 'Unknown A',
+      teamB:       teamMap[g.team_b_id] || 'Unknown B',
       kickoffTime: g.kickoff_time,
       is_complete: g.is_complete
     }))
   }
 
-  return { list, fetchGames }
+  // New: two-param wrapper so HomeView can do fetchByCategory(gender, type)
+  async function fetchByCategory(gender = 'All', type = 'All') {
+    // force type = 'All' whenever gender !== 'Male'
+    if (gender !== 'Male') type = 'All'
+    return fetchGames({ gender, type })
+  }
+  
+
+  return {
+    list,
+    fetchGames,
+    fetchByCategory,
+  }
 })

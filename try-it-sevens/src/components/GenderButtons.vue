@@ -3,24 +3,29 @@ import { computed } from 'vue'
 
 const props = defineProps({
   selectedGender: String,
-  selectedType: String
+  selectedType:   String,
 })
 
 const emit = defineEmits(['updateSelection'])
 
+// only show Elite/Social when Male is selected
 const showTypes = computed(() => props.selectedGender === 'Male')
 
 function selectGender(gender) {
   emit('updateSelection', {
     gender,
-    type: gender === 'Male' ? 'Elite' : 'default'
+    // Male → keep existing type if it was Male, or default to 'Elite'
+    // Others → force 'All'
+    type: gender === 'Male'
+      ? (props.selectedGender === 'Male' ? props.selectedType : 'Elite')
+      : 'All',
   })
 }
 
 function selectType(type) {
   emit('updateSelection', {
     gender: props.selectedGender,
-    type
+    type,
   })
 }
 </script>
@@ -51,6 +56,7 @@ function selectType(type) {
       </button>
     </div>
 
+    <!-- only for Male -->
     <div v-if="showTypes" class="flex justify-center gap-4">
       <button
         class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-500 hover:bg-emerald-100 transition"

@@ -16,6 +16,9 @@ defineProps({
 <template>
   <section class="space-y-4 text-center">
     <h2 class="text-xl font-bold">Scoreboard</h2>
+    <div v-if="rows.every(r => r.played === 0)">
+      <p class="italic text-gray-500">No scoreboard data available for this category.</p>
+    </div>
 
     <div class="overflow-x-auto">
       <table class="min-w-full text-left border border-gray-300 rounded-lg overflow-hidden">

@@ -55,7 +55,7 @@ const navLinks = computed(() => {
   const privateLinks = [
     { to: '/admin',            text: 'Dashboard' },
     { to: '/admin/accounts',   text: 'Accounts' },
-    { to: '/admin/teams',      text: 'Teams' },
+    { to: '/admin/teams',      text: 'Manage Teams' },
     { to: '/admin/scoreboard', text: 'Edit Scoreboard' },
     { to: '/admin/games',      text: 'Game Planner' },
     { to: '/admin/sponsors',   text: 'Sponsors' }

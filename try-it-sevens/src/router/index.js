@@ -22,14 +22,23 @@ import AdminSponsorsView      from '@/views/admin/SponsorsView.vue'
 function requireAccess(...allowedRoles) {
   return (to, from, next) => {
     const auth = useAuthStore()
-    if (!auth.loggedIn) return next('/login')
-    if (allowedRoles.includes(auth.user?.access)) return next()
+    if (!auth.loggedIn) {
+      return next('/login')
+    }
+    // Determine user role/access field
+    const role = auth.user?.role ?? auth.user?.access
+    // Allow if user's role matches any allowed
+    if (allowedRoles.includes(role)) {
+      return next()
+    }
+    // Otherwise redirect home
     return next('/')
   }
 }
+
 const routes = [
   { path: '/',           component: HomeView },
-  { path: '/scoreboard', component: ScoreboardView },
+  { path: '/scoreboard', component: ScoreboardView }, 
   { path: '/games',      component: GamesView },
   { path: '/map',        component: MapView },
   { path: '/contact',    component: ContactView },
@@ -42,18 +51,18 @@ const routes = [
 
   // Admin
   { path: '/admin',             component: AdminHome, beforeEnter: requireAccess('admin') },
-  { path: '/admin/teams',       component: AdminTeamsView, beforeEnter: requireAccess('admin') },
-  { path: '/admin/scoreboard',  component: AdminScoreboardView, beforeEnter: requireAccess('admin') },
+  { path: '/admin/teams',       component: AdminTeamsView, beforeEnter: requireAccess('admin', 'super') },
+  { path: '/admin/scoreboard',  component: AdminScoreboardView, beforeEnter: requireAccess('admin', 'super') },
   { path: '/admin/games',       component: AdminGamePlannerView, beforeEnter: requireAccess('admin', 'super') },
-  { path: '/admin/sponsors',    component: AdminSponsorsView, beforeEnter: requireAccess('admin') },
+  { path: '/admin/sponsors',    component: AdminSponsorsView, beforeEnter: requireAccess('admin', 'super') },
 
   // Team Admin
   { path: '/team-admin',        component: TeamAdminHome, beforeEnter: requireAccess('team') },
 ]
 
-
 export default createRouter({
   history: createWebHistory(),
   routes
 })
+
 
