@@ -1,3 +1,4 @@
+<!-- src/views/HomeView.vue -->
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -23,56 +24,67 @@ const previousGames = ref([])
 
 function classifyGames() {
   const now = new Date()
-  const games = gamesStore.list.filter(g =>
+
+  // only the games matching gender/type
+  const list = gamesStore.list.filter(g =>
     g.gender === selectedGender.value &&
-    (g.type || 'All') === selectedType.value
+    (g.type   || 'All') === (selectedType.value || 'All')
   )
 
   currentGames.value = []
   upcomingGames.value = []
   previousGames.value = []
 
-  for (const g of games) {
-    const kickoff = new Date(`${g.date}T${g.kickoff_time}`)
-    const diff     = (kickoff - now) / 60000
-    if (diff >= -5 && diff <= 20) currentGames.value.push(g)
-    else if (diff > 5)            upcomingGames.value.push(g)
-    else if (diff < -20)           previousGames.value.push(g)
+  for (const g of list) {
+    // g.kickoffTime is the full ISO timestamp e.g. "2025-05-07T18:00:00.000Z"
+    const kickoff = new Date(g.kickoffTime)
+    const diff    = (kickoff - now) / 60000  // minutes difference
+
+    if (diff >= -5 && diff <= 20) {
+      currentGames.value.push(g)
+    }
+    else if (diff > 20) {
+      upcomingGames.value.push(g)
+    }
+    else {
+      previousGames.value.push(g)
+    }
   }
 }
 
 async function handleSelection({ gender, type }) {
-  console.log('[handleSelection] selecting →', { gender, type })
   selectedGender.value = gender
   selectedType.value   = type
 
-  try {
-    await gamesStore.fetchByCategory(gender, type)
-    console.log('[handleSelection] selecting →', { gender, type })
-    await scoreboardStore.fetchByCategory(gender, type)
-    console.log('[handleSelection] scoreboard fetched →', scoreboardStore.table)
-  } catch (err) {
-    console.error(err)
-  }
-
+  // re-fetch only this category’s games & scoreboard
+  await gamesStore.fetchGames({ gender, type })
+  await scoreboardStore.fetchByCategory(gender, type)
   classifyGames()
 }
-
-let timer
-onMounted(async () => {
-  await handleSelection({ gender: selectedGender.value, type: selectedType.value })
-  timer = setInterval(classifyGames, 60000)
-})
-onUnmounted(() => clearInterval(timer))
 
 function goTo(section) {
   router.push({ path: '/games', hash: `#${section}` })
 }
+
+let timer
+onMounted(async () => {
+  // initial load
+  await gamesStore.fetchGames({ gender: selectedGender.value, type: selectedType.value })
+  await scoreboardStore.fetchByCategory(selectedGender.value, selectedType.value)
+  classifyGames()
+
+  // re-run classification every minute to keep "Current" up-to-date
+  timer = setInterval(classifyGames, 60_000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
 
 <template>
   <main class="wrapper pt-20 space-y-10">
-    <GenderButtons 
+    <GenderButtons
       :selectedGender="selectedGender"
       :selectedType="selectedType"
       @updateSelection="handleSelection"
