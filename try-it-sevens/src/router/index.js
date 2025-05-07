@@ -22,16 +22,20 @@ import AdminSponsorsView      from '@/views/admin/SponsorsView.vue'
 function requireAccess(...allowedRoles) {
   return (to, from, next) => {
     const auth = useAuthStore()
+    console.log('[guard] loggedIn:', auth.loggedIn, 'user:', auth.user)
+
+    // 1) Redirect unauthenticated users to login
     if (!auth.loggedIn) {
       return next('/login')
     }
-    // Determine user role/access field
-    const role = auth.user?.role ?? auth.user?.access
-    // Allow if user's role matches any allowed
+
+    // 2) Check against actual role property (not mixed with access)
+    const role = auth.user?.role
     if (allowedRoles.includes(role)) {
       return next()
     }
-    // Otherwise redirect home
+
+    // 3) Otherwise send them home
     return next('/')
   }
 }

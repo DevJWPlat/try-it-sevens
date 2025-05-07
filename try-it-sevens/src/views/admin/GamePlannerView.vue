@@ -175,7 +175,11 @@ onMounted(fetchData)
 <template>
   <main class="wrapper pt-20 space-y-6 max-w-2xl mx-auto">
     <Breadcrumbs />
-    <GenderButtons @updateSelection="handleSelection" />
+    <GenderButtons
+    :selectedGender="selectedGender"
+    :selectedType="selectedType"
+    @updateSelection="handleSelection"
+    />
 
     <button @click="openAdd" class="block w-full py-3 bg-black text-white rounded hover:bg-gray-800 transition">
       Add Game

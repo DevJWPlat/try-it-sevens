@@ -52,7 +52,9 @@ const login = async () => {
     return
   }
 
-  auth.login(data) // save the logged-in user
+  // Save user and normalize role field
+  const userWithRole = { ...data, role: data.access }
+  auth.login(userWithRole) // save the logged-in user
 
   // Redirect based on access level
   if (data.access === 'super') {
