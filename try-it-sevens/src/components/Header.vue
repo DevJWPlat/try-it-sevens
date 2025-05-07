@@ -46,9 +46,7 @@ const pageTitle = computed(() => {
 const navLinks = computed(() => {
   const publicLinks = [
     { to: '/',           text: 'Home' },
-    { to: '/scoreboard', text: 'Scoreboard' },
     { to: '/games',      text: 'Games' },
-    { to: '/map',        text: 'Map' },
     { to: '/contact',    text: 'Contact' }
   ]
 
@@ -56,7 +54,6 @@ const navLinks = computed(() => {
     { to: '/admin',            text: 'Dashboard' },
     { to: '/admin/accounts',   text: 'Accounts' },
     { to: '/admin/teams',      text: 'Manage Teams' },
-    { to: '/admin/scoreboard', text: 'Edit Scoreboard' },
     { to: '/admin/games',      text: 'Game Planner' },
     { to: '/admin/sponsors',   text: 'Sponsors' }
   ]

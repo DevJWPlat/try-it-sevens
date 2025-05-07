@@ -37,13 +37,6 @@ function clearAll() {
     </button>
 
     <button
-      @click="go('/admin/scoreboard')"
-      class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
-    >
-      Edit Scoreboard
-    </button>
-
-    <button
       @click="go('/admin/games')"
       class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
     >

@@ -72,7 +72,7 @@ function goTo(section) {
 
 <template>
   <main class="wrapper pt-20 space-y-10">
-    <GenderButtons
+    <GenderButtons 
       :selectedGender="selectedGender"
       :selectedType="selectedType"
       @updateSelection="handleSelection"
