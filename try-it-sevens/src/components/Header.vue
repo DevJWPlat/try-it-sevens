@@ -66,6 +66,7 @@ const navLinks = computed(() => {
   if (auth.user.access === 'admin') {
     return [
       { to: '/admin',             text: 'Dashboard' },
+      { to: '/admin/accounts',    text: 'Accounts' },
       { to: '/admin/teams',       text: 'Manage Teams' },
       { to: '/admin/games',       text: 'Game Planner' },
     ]
