@@ -13,6 +13,7 @@ function toggleMenu() {
   isOpen.value = !isOpen.value
 }
 
+
 function handleAuth() {
   toggleMenu()
   if (auth.loggedIn) {
@@ -38,27 +39,64 @@ const pageTitle = computed(() => {
     case '/map': return 'Map'
     case '/contact': return 'Contact'
     case '/login': return 'Login'
-    case '/about': return 'About'
+    case '/admin':          return 'Admin Dashboard'
+    case '/team-admin':     return 'My Team'
+    case '/super-admin':    return 'Super Admin'
     default: return 'TryIt Sevens'
   }
 })
 
 const navLinks = computed(() => {
-  const publicLinks = [
+  if (!auth.loggedIn) {
+    return [
+      { to: '/',           text: 'Home' },
+      { to: '/games',      text: 'Matches' },
+      { to: '/contact',    text: 'Contact' }
+    ]
+  }
+
+  // Team-admin sees only their own page
+  if (auth.user.access === 'team') {
+    return [
+      { to: '/team-admin', text: 'My Team' }
+    ]
+  }
+
+  // Admin (not super) sees admin dashboard and manage sub-pages
+  if (auth.user.access === 'admin') {
+    return [
+      { to: '/admin',             text: 'Dashboard' },
+      { to: '/admin/teams',       text: 'Manage Teams' },
+      { to: '/admin/games',       text: 'Game Planner' },
+    ]
+  }
+
+  // Super sees everything
+  if (auth.user.access === 'super') {
+    return [
+      { to: '/super-admin',       text: 'Super Dashboard' },
+      { to: '/admin/accounts',    text: 'Accounts' },
+      { to: '/admin/teams',       text: 'Manage Teams' },
+      { to: '/admin/games',       text: 'Game Planner' },
+    ]
+  }
+
+  // Fallback to public
+  return [
     { to: '/',           text: 'Home' },
+    { to: '/scoreboard', text: 'Scoreboard' },
     { to: '/games',      text: 'Games' },
+    { to: '/map',        text: 'Map' },
     { to: '/contact',    text: 'Contact' }
   ]
+})
 
-  const privateLinks = [
-    { to: '/admin',            text: 'Dashboard' },
-    { to: '/admin/accounts',   text: 'Accounts' },
-    { to: '/admin/teams',      text: 'Manage Teams' },
-    { to: '/admin/games',      text: 'Game Planner' },
-    { to: '/admin/sponsors',   text: 'Sponsors' }
-  ]
-
-  return auth.loggedIn ? privateLinks : publicLinks
+const logoLink = computed(() => {
+  if (!auth.loggedIn) return '/'
+  if (auth.user.access === 'super') return '/super-admin'
+  if (auth.user.access === 'admin') return '/admin'
+  if (auth.user.access === 'team') return '/team-admin'
+  return '/'
 })
 </script>
 
@@ -66,7 +104,7 @@ const navLinks = computed(() => {
   <header class="py-4 bg-white fixed top-0 left-0 w-full z-50">
     <div class="wrapper">
       <div class="flex justify-between items-center">
-        <RouterLink to="/" class="logo">
+        <RouterLink :to="logoLink" class="logo">
           <img :src="logo" alt="Logo" class="h-10" />
         </RouterLink>
         <h1 class="text-xl font-bold">{{ pageTitle }}</h1>

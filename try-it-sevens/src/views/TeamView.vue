@@ -1,93 +1,111 @@
-<!-- src/views/TeamView.vue -->
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 
-// 1) Your master “database” of teams, with logo URL, description, and players
-const allTeamsData = {
-  Tigers: {
-    logo: '/assets/images/tigers-logo.svg',
-    description: 'Fierce predators of the sevens pitch!',
-    position: '1/6',
-    players: [
-      { number: 1, name: 'Alice' },
-      { number: 2, name: 'Bob' },
-      { number: 3, name: 'Charlie' }
-    ]
-  },
-  Lions: {
-    logo: '/assets/images/lions-logo.svg',
-    description: 'Roaring through every match.',
-    position: '2/6',
-    players: [
-      { number: 4, name: 'Diana' },
-      { number: 5, name: 'Evan' }
-    ]
-  },
-  // …and so on for every team…
+const route = useRoute()
+const router = useRouter()
+const slug  = route.params.team
+
+const team    = ref(null)
+const players = ref([])
+const loading = ref(true)
+const error   = ref('')
+
+async function fetchTeam() {
+  try {
+    // Fetch team by name slug (case-sensitive match)
+    const { data: t, error: teamErr } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('name', slug)
+      .single()
+    if (teamErr || !t) {
+      throw new Error('Team not found')
+    }
+    team.value = t
+
+    // Fetch its players
+    const { data: pl, error: plErr } = await supabase
+      .from('players')
+      .select('*')
+      .eq('team_id', t.id)
+      .order('number', { ascending: true })
+    if (plErr) console.error('Players fetch error:', plErr)
+    players.value = pl || []
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    loading.value = false
+  }
 }
 
-// 2) Grab the team slug from the route
-const route = useRoute()
-const teamKey = route.params.team  // e.g. "Tigers"
-
-// 3) Look it up
-const team = computed(() => allTeamsData[teamKey] || null)
+onMounted(fetchTeam)
 </script>
 
 <template>
-  <main class="wrapper pt-20">
-    <section v-if="team" class="max-w-md mx-auto space-y-6">
-      <!-- Team name header -->
-      <h1 class="text-2xl font-bold text-center">{{ teamKey }}</h1>
-
-      <!-- Logo -->
-      <div class="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
+  <main class="wrapper pt-20 max-w-3xl mx-auto space-y-6">
+    <div v-if="loading" class="text-center py-10">Loading team details...</div>
+    <div v-else-if="error" class="text-center text-red-600 py-10">{{ error }}</div>
+    <div v-else>
+      <!-- Team Header -->
+      <div class="flex items-center space-x-4">
         <img
-          v-if="team.logo"
-          :src="team.logo"
-          :alt="teamKey + ' logo'"
-          class="object-contain w-full h-full"
+          v-if="team.logo_url"
+          :src="team.logo_url"
+          alt="Team Logo"
+          class="h-20 w-20 object-contain rounded"
         />
+        <h1 class="text-3xl font-bold">{{ team.name }}</h1>
       </div>
 
-      <!-- Description & Position -->
-      <div class="space-y-2 text-gray-700">
-        <p><span class="font-semibold">Team Name:</span> {{ teamKey }}</p>
-        <p><span class="font-semibold">Description:</span> {{ team.description }}</p>
-        <p><span class="font-semibold">Position:</span> {{ team.position }}</p>
-      </div>
+      <!-- Description -->
+      <p v-if="team.description" class="mt-4 text-gray-700">{{ team.description }}</p>
 
-      <!-- Players Table -->
-      <div>
-        <h2 class="text-xl font-semibold mb-2">Players</h2>
-        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
-          <thead class="bg-gray-200 text-gray-700">
-            <tr>
-              <th class="px-4 py-2">#</th>
-              <th class="px-4 py-2">Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(p, i) in team.players"
-              :key="i"
-              class="even:bg-gray-50 hover:bg-green-50 transition"
-            >
-              <td class="px-4 py-2 font-medium">{{ p.number }}</td>
-              <td class="px-4 py-2">{{ p.name }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- Contact Email -->
+      <p v-if="team.contact_email" class="mt-2">
+        <strong>Contact us:</strong>
+        <a :href="`mailto:${team.contact_email}`" class="text-blue-600 hover:underline">
+          {{ team.contact_email }}
+        </a>
+      </p>
 
-    <section v-else class="text-center py-20 text-gray-500">
-      <p>Team “{{ teamKey }}” not found.</p>
-    </section>
+      <!-- Players List -->
+      <section v-if="players.length" class="mt-6">
+        <h2 class="text-2xl font-semibold mb-2">Players</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="px-4 py-2">Number</th>
+                <th class="px-4 py-2">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="p in players"
+                :key="p.id"
+                class="even:bg-gray-50 hover:bg-green-50 transition"
+              >
+                <td class="px-4 py-2 font-medium">{{ p.number }}</td>
+                <td class="px-4 py-2">{{ p.name }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <button
+        @click="$router.back()"
+        class="mt-8 inline-block bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+      >
+        ← Back
+      </button>
+    </div>
   </main>
 </template>
 
 <style scoped>
-/* adjust as desired */
+/* optional page-specific styles */
 </style>

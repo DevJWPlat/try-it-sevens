@@ -13,8 +13,12 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     login(user) {
+      // Normalize access level to lowercase for consistent checks
+      if (user.access) {
+        user.access = String(user.access).toLowerCase()
+      }
       this.user = user
-      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('user', JSON.stringify(this.user))
     },
     logout() {
       this.user = null
@@ -23,7 +27,12 @@ export const useAuthStore = defineStore('auth', {
     restore() {
       const saved = localStorage.getItem('user')
       if (saved) {
-        this.user = JSON.parse(saved)
+        const user = JSON.parse(saved)
+        // ensure normalized access
+        if (user.access) {
+          user.access = String(user.access).toLowerCase()
+        }
+        this.user = user
       }
     }
   }

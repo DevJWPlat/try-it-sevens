@@ -1,73 +1,44 @@
-<!-- src/views/LoginView.vue -->
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-
 import { supabase } from '@/lib/supabase'
 
-
 const auth     = useAuthStore()
+const router   = useRouter()
+
 const username = ref('')
 const password = ref('')
 const error    = ref('')
 
-async function handleSubmit() {
+async function login() {
   error.value = ''
-  try {
-    await auth.login(username.value, password.value)
-    router.push('/')                // or wherever
-  } catch (e) {
-    error.value = e.message
-  }
-}
+  const uname = username.value.trim().toLowerCase()
 
-// async function testFetchAllUsers() {
-//   const { data, error } = await supabase
-//     .from('app_users')
-//     .select('*')
-
-//   console.log('SUPABASE TEST:', { data, error })
-// }
-
-// onMounted(async () => {
-//   const { data, error } = await supabase
-//     .from('app_users')
-//     .select('*')
-//   console.log('DB TEST:', { data, error })
-// })
-
-const router = useRouter()
-
-const login = async () => {
-  const { data, error } = await supabase
+  const { data, error: err } = await supabase
     .from('app_users')
     .select('*')
-    .eq('username', username.value)
+    .eq('username', uname)
     .eq('password', password.value)
     .single()
 
-  if (error || !data) {
-    alert('Invalid login')
+  if (err || !data) {
+    error.value = 'Invalid username or password'
     return
   }
 
-  // Save user and normalize role field
-  const userWithRole = { ...data, role: data.access }
-  auth.login(userWithRole) // save the logged-in user
+  auth.login(data)
 
-  // Redirect based on access level
-  if (data.access === 'super') {
-    router.push('/super-admin')
-  } else if (data.access === 'admin') {
-    router.push('/admin')
-  } else if (data.access === 'team') {
-    router.push('/team-admin')
-  } else {
-    router.push('/admin') // fallback
-  }
+  // Determine redirect path based on normalized access level
+  const role = String(data.access).toLowerCase()
+  let path = '/'
+  if (role === 'super')      path = '/super-admin'
+  else if (role === 'admin') path = '/admin'
+  else if (role === 'team')  path = '/team-admin'
+
+  console.log('Login redirect to', path)
+  router.push(path)
 }
-
 </script>
 
 <template>
@@ -78,17 +49,35 @@ const login = async () => {
     <form @submit.prevent="login" class="space-y-4">
       <label class="block">
         <span>Username</span>
-        <input v-model="username" required class="mt-1 block w-full border rounded p-2" />
+        <input
+          v-model="username"
+          autocomplete="username"
+          required
+          class="mt-1 block w-full border rounded p-2"
+        />
       </label>
 
       <label class="block">
         <span>Password</span>
-        <input v-model="password" type="password" required class="mt-1 block w-full border rounded p-2" />
+        <input
+          v-model="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          class="mt-1 block w-full border rounded p-2"
+        />
       </label>
 
-      <button type="submit" class="block w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+      <button
+        type="submit"
+        class="block w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+      >
         Login
       </button>
     </form>
   </main>
 </template>
+
+<style scoped>
+/* no extra styles */
+</style>

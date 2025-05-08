@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import { useGamesStore } from '@/stores/games'
 import GenderButtons from '@/components/GenderButtons.vue'
 import GamesList from '@/components/GamesList.vue'
+import MapDisplay from '@/components/MapDisplay.vue'
 
 const store = useGamesStore()
 
@@ -74,6 +75,7 @@ onMounted(async () => {
       :games="previousGames"
       title="Previous Games"
     />
+    <MapDisplay />
   </main>
 </template>
 
