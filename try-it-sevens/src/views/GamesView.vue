@@ -51,7 +51,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main class="wrapper pt-20 space-y-10">
+  <main class="wrapper space-y-10">
     <GenderButtons
       :selectedGender="selectedGender"
       :selectedType="selectedType"

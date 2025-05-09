@@ -32,24 +32,27 @@ function selectType(type) {
 
 <template>
   <div class="space-y-4 text-center">
-    <div class="flex justify-center gap-4">
+    <div class="toggle-container">
       <button
-        class="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition"
-        :class="{ 'ring-2 ring-white': selectedGender === 'Male' }"
+        class="gender-btn-main transition"
+        :class="{ 'bg-[#96D1F2] text-black': selectedGender === 'Male',
+        'text-white': props.selectedGender !== 'Male' }"
         @click="selectGender('Male')"
       >
-        Male
+        Mens
       </button>
       <button
-        class="px-4 py-2 rounded-lg bg-pink-500 text-white hover:bg-pink-600 transition"
-        :class="{ 'ring-2 ring-white': selectedGender === 'Ladies' }"
+        class="gender-btn-main transition"
+        :class="{ 'bg-[#96D1F2] text-black': selectedGender === 'Ladies',
+        'text-white': props.selectedGender !== 'Ladies' }"
         @click="selectGender('Ladies')"
       >
         Ladies
       </button>
       <button
-        class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
-        :class="{ 'ring-2 ring-white': selectedGender === 'Juniors' }"
+        class="gender-btn-main transition"
+        :class="{ 'bg-[#96D1F2] text-black': selectedGender === 'Juniors',
+        'text-white': props.selectedGender !== 'Juniors' }"
         @click="selectGender('Juniors')"
       >
         Juniors
@@ -57,17 +60,20 @@ function selectType(type) {
     </div>
 
     <!-- only for Male -->
-    <div v-if="showTypes" class="flex justify-center gap-4">
+    <div v-if="showTypes" class="toggle-container">
+
       <button
-        class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-500 hover:bg-emerald-100 transition"
-        :class="{ 'bg-emerald-100': selectedType === 'Elite' }"
+        class="gender-btn-type transition"
+        :class="{ 'bg-[#96D1F2] text-black': selectedType === 'Elite',
+        'text-white': props.selectedType !== 'Elite' }"
         @click="selectType('Elite')"
       >
         Elite
       </button>
       <button
-        class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-500 hover:bg-emerald-100 transition"
-        :class="{ 'bg-emerald-100': selectedType === 'Social' }"
+        class="gender-btn-type transition"
+        :class="{ 'bg-[#96D1F2] text-black': selectedType === 'Social',
+        'text-white': props.selectedType !== 'Social' }"
         @click="selectType('Social')"
       >
         Social
@@ -75,3 +81,30 @@ function selectType(type) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.toggle-container {
+  width: 100%;
+  padding: 6px;
+  background: #231F20;
+  border-radius: 16px;
+  display: flex;
+  gap: 16px;
+}
+
+.gender-btn-main {
+  cursor: pointer;
+  width: calc((100% - 32px) / 3);
+  padding: 16px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.gender-btn-type {
+  cursor: pointer;
+  width: calc((100% - 16px) / 2);
+  padding: 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+</style>

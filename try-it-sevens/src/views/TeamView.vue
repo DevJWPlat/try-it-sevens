@@ -44,7 +44,7 @@ onMounted(fetchTeam)
 </script>
 
 <template>
-  <main class="wrapper pt-20 max-w-3xl mx-auto space-y-6">
+  <main class="wrapper max-w-3xl mx-auto space-y-6">
     <div v-if="loading" class="text-center py-10">Loading team details...</div>
     <div v-else-if="error" class="text-center text-red-600 py-10">{{ error }}</div>
     <div v-else>

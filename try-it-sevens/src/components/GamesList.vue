@@ -25,7 +25,6 @@ function formatTime(kickoff) {
 
 <template>
   <section v-if="games.length" class="space-y-4">
-    <h2 class="text-lg font-semibold">{{ title }}</h2>
     <div
       v-for="(g, i) in games"
       :key="g.id || i"

@@ -18,7 +18,7 @@ function submitForm() {
 </script>
 
 <template>
-  <main class="wrapper pt-20 pb-10 space-y-8">
+  <main class="wrapper pb-10 space-y-8">
     <section class="max-w-md mx-auto space-y-4">
       <h1 class="text-2xl font-bold text-center">Contact</h1>
       <p class="text-center">Want to take part in TryIt Sevens 2026? Get in touch now</p>
