@@ -1,10 +1,13 @@
 <script setup>
-
+import FollowUs from '@/components/FollowUs.vue'
 </script>
 
 <template>
-    <footer class="text-center text-xs text-gray-500 pb-4 pt-8">
-      Designed & Built by Jonny Whittle
+    <footer class="text-center pb-4 pt-8">
+      <FollowUs />
+      <div class="wrapper text-xs text-gray-500" style="margin-top: 60px;">
+        Designed & Built by Jonny Whittle
+      </div>
     </footer>
 </template>
   

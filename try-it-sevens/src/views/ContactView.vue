@@ -23,7 +23,7 @@ function submitForm() {
       <h1 class="text-2xl font-bold text-center">Contact</h1>
       <p class="text-center">Want to take part in TryIt Sevens 2026? Get in touch now</p>
 
-      <form @submit.prevent="submitForm" class="space-y-4">
+      <form @submit.prevent="submitForm" class="space-y-4 contact-form">
         <input
           v-model="name"
           type="text"
@@ -47,18 +47,30 @@ function submitForm() {
         ></textarea>
         <button
           type="submit"
-          class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+          class="w-full submit"
         >
           Submit
         </button>
       </form>
-
-      <FollowUs />
     </section>
   </main>
 </template>
 
-<style scoped>
-/* Page-specific styling if needed */
+<style lang="scss" scoped>
+.contact-form {
+  .submit {
+    background: #231F20;
+    color: #96D1F2;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 12px;
+    padding: 12px 30px;
+    transition: all .3s;
+    &:hover {
+      background: #96D1F2;
+      color: #231F20;
+    }
+  }
+}
 </style>
 

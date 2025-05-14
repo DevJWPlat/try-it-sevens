@@ -57,24 +57,33 @@ onMounted(async () => {
       :selectedType="selectedType"
       @updateSelection="handleSelection"
     />
-
+    <h2 class="main-sub-heading mb-4">Current games</h2>
     <GamesList
       v-if="currentGames.length"
       :games="currentGames"
       title="Current Games"
     />
-
+    <p v-else class="text-center text-gray-500">
+      There are no matches at the moment
+    </p>
+    <h2 class="main-sub-heading mb-4">Upcoming games</h2>
     <GamesList
       v-if="upcomingGames.length"
       :games="upcomingGames"
       title="Upcoming Games"
     />
-
+    <p v-else class="text-center text-gray-500">
+      There are no upcoming matches
+    </p>
+    <h2 class="main-sub-heading mb-4">Previous games</h2>
     <GamesList
       v-if="previousGames.length"
       :games="previousGames"
       title="Previous Games"
     />
+    <p v-else class="text-center text-gray-500">
+      No matches have been played yet
+    </p>
     <MapDisplay />
   </main>
 </template>

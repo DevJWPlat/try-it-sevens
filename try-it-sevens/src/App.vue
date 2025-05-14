@@ -4,7 +4,7 @@ import Footer from '@/components/Footer.vue'
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col justify-centre">
     <MobileMenu />
     <RouterView />
     <Footer />

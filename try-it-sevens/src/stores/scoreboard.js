@@ -7,48 +7,42 @@ export const useScoreboardStore = defineStore('scoreboard', () => {
   const table = ref([])
 
   async function fetchByCategory(gender = 'All', type = 'All') {
-    // 1) Fetch the correct teams for this gender/type
-    let teamQuery = supabase
+    // 1) Grab every team (so we can filter client-side)
+    const { data: allTeams, error: teamErr } = await supabase
       .from('teams')
-      .select('id, name')
-      .eq('gender', gender)
-
-    if (gender === 'Male' && type !== 'All') {
-      teamQuery = teamQuery.eq('type', type)
-    }
-
-    const { data: teams, error: teamErr } = await teamQuery
+      .select('id, name, gender, type')
     if (teamErr) {
       console.error('[scoreboard] team fetch error:', teamErr)
       table.value = []
       return
     }
-    console.log('[scoreboard] teams →', teams, teamErr)
 
-    // 2) Determine which 'type' to fetch from the scoreboard table
-    //    (Male→Elite/Social, everyone else→All)
-    const scoreType =
-      gender === 'Male' && type !== 'All'
-        ? type
-        : 'All'
-        console.log('[scoreboard] fetching for', { gender, type, scoreType })
-    // 3) Fetch only those scoreboard rows
+    // 2) Locally pick only the teams for this gender/type
+    const teams = allTeams.filter(t => {
+      if (t.gender !== gender) return false
+      if (gender === 'Male' && type !== 'All' && t.type !== type) return false
+      return true
+    })
+
+    // 3) Decide which “type” bucket to read from the scoreboard table
+    //    (Male → Elite/Social; everyone else → All)
+    const scoreType = (gender === 'Male' && type !== 'All')
+      ? type
+      : 'All'
+
+    // 4) Fetch only the matching scoreboard rows
     const { data: scores, error: scoreErr } = await supabase
       .from('scoreboard')
-      .select('*')
+      .select('team_id, played, points, wins, draws, losses')
       .eq('type', scoreType)
-      console.log('[scoreboard] scores →', scores, scoreErr)
     if (scoreErr) {
       console.error('[scoreboard] score fetch error:', scoreErr)
       table.value = []
       return
     }
 
-    // 4) Merge scores into the teams list
-    const scoreMap = Object.fromEntries(
-      (scores || []).map(s => [s.team_id, s])
-    )
-
+    // 5) Merge stats into our filtered teams
+    const scoreMap = Object.fromEntries(scores.map(s => [s.team_id, s]))
     const rows = teams.map(t => {
       const stats = scoreMap[t.id] || {
         played: 0,
@@ -58,23 +52,21 @@ export const useScoreboardStore = defineStore('scoreboard', () => {
         losses: 0
       }
       return {
-        team: t.name,
+        team:   t.name,
         ...stats
       }
     })
 
-    // 5) Rank (ties share a rank)
+    // 6) Sort & rank (ties share rank)
     rows.sort((a, b) => b.points - a.points)
-    let prevPoints = null
-    let prevRank   = 0
-
-    rows.forEach((row, idx) => {
-      const position = idx + 1
-      if (row.points !== prevPoints) {
-        prevPoints = row.points
-        prevRank   = position
+    let prevPoints = null, prevRank = 0
+    rows.forEach((r, i) => {
+      const pos = i + 1
+      if (r.points !== prevPoints) {
+        prevPoints = r.points
+        prevRank   = pos
       }
-      row.rank = prevRank
+      r.rank = prevRank
     })
 
     table.value = rows

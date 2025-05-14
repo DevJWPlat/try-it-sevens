@@ -6,8 +6,6 @@ import GenderButtons from '@/components/GenderButtons.vue'
 import ScoreboardPreview from '@/components/ScoreboardPreview.vue'
 import GamesList from '@/components/GamesList.vue'
 import MapDisplay from '@/components/MapDisplay.vue'
-import Sponsors from '@/components/Sponsors.vue'
-import FollowUs from '@/components/FollowUs.vue'
 import { useGamesStore } from '@/stores/games'
 import { useScoreboardStore } from '@/stores/scoreboard'
 
@@ -135,9 +133,22 @@ onUnmounted(() => {
     </div>
 
     <template v-if="activeSection === 'current'">
-      <GamesList :games="currentGames"  title="Current Games"  highlightSecond />
-      <RouterLink to="/games" class="v-all">View all</RouterLink>
+      <!-- when we have games -->
+      <template v-if="currentGames.length">
+        <GamesList
+          :games="currentGames"
+          title="Current Games"
+          highlightSecond
+        />
+        <RouterLink to="/games" class="v-all">View all</RouterLink>
+      </template>
+    
+      <!-- when we have no games -->
+      <p v-else class="text-center text-gray-500">
+        There are no matches at the moment
+      </p>
     </template>
+    
 
     <template v-else-if="activeSection === 'upcoming'">
       <GamesList :games="upcomingGames" title="Upcoming Games" highlightSecond />
@@ -146,24 +157,24 @@ onUnmounted(() => {
 
     <template v-else>
       <GamesList :games="previousGames" title="Previous Games" highlightSecond />
-    <RouterLink to="/games" class="v-all">View all</RouterLink>
-
+      <RouterLink to="/games" class="v-all">View all</RouterLink>
     </template>
+
     <div class="spacer"></div>
 
     <MapDisplay />
-    <Sponsors />
-    <FollowUs />
+
   </main>
 </template>
 
 <style scoped>
   .v-all {
-    padding: 12px 30px;
     margin: 0 auto;
-    background: #96D1F2;
-    color: black;
-    font-weight: 600;
+    background: #231F20;
+    padding: 12px 30px;
+    color: #96D1F2;
+    font-weight: 400;
+    letter-spacing: 1px;
     border-radius: 12px;
     width: max-content;
     display: block;
