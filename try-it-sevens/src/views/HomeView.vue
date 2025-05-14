@@ -179,5 +179,11 @@ onUnmounted(() => {
     width: max-content;
     display: block;
     text-align: center;
+    transition: all .3s;
+  }
+
+  .v-all:hover {
+    background: #96D1F2;
+    color: #231F20;
   }
 </style>

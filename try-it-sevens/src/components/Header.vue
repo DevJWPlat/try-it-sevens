@@ -131,12 +131,13 @@ const logoLink = computed(() => {
         </button>
       </div>
 
-      <nav
+      <nav 
         :class="[
           'fixed top-0 right-0 w-full h-screen bg-white flex flex-col justify-between p-12 transition-transform duration-300',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         ]"
       >
+      <div class="wrapper nav-contents-wrapped">
         <div class="flex flex-col items-center space-y-6 text-xl font-semibold">
           <RouterLink
             v-for="link in navLinks"
@@ -152,6 +153,7 @@ const logoLink = computed(() => {
         <button @click="handleAuth" class="custom-button px-6 py-2 rounded-full">
           {{ auth.loggedIn ? 'Logout' : 'Login' }}
         </button>
+      </div>
       </nav>
     </div>
   </header>
@@ -163,6 +165,29 @@ nav button {
   transition: ease 0.3s;
 }
 .custom-button {
-  background: #93D0F2;
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  width: max-content;
+  display: block;
+  text-align: center;
+  width: 100%;
+  transition: all .3s;
+}
+
+.custom-button:hover {
+  background: #96D1F2;
+  color: #231F20;
+}
+
+.nav-contents-wrapped {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 0;
 }
 </style>

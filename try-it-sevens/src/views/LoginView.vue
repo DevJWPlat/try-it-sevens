@@ -70,7 +70,7 @@ async function login() {
 
       <button
         type="submit"
-        class="block w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        class="custom-button block w-full py-3"
       >
         Login
       </button>
@@ -79,5 +79,22 @@ async function login() {
 </template>
 
 <style scoped>
-/* no extra styles */
+.custom-button {
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  width: max-content;
+  display: block;
+  text-align: center;
+  width: 100%;
+  transition: all .3s;
+}
+
+.custom-button:hover {
+  background: #96D1F2;
+  color: #231F20;
+}
 </style>
