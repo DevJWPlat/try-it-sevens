@@ -24,7 +24,7 @@ const form         = reactive({
 const teams = ref([])
 
 // Compute whether to show type dropdown
-const showType = computed(() => selectedGender.value === 'Male')
+const showType = computed(() => form.gender === 'Male')
 
 async function fetchTeams() {
   let query = supabase.from('teams').select('*')
@@ -98,6 +98,8 @@ onMounted(fetchTeams)
       @updateSelection="handleSelection"
     />
 
+    <button @click="openAdd" class="btn-dark add-teams mb-10 mt-20">Add Team</button>
+
     <div class="overflow-x-auto">
       <table class="custom-table min-w-full text-left rounded-lg border-collapse">
         <thead>
@@ -122,7 +124,7 @@ onMounted(fetchTeams)
       </table>
     </div>
 
-    <button @click="openAdd" class="btn-dark add-teams">Add Team</button>
+    
 
     <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 overlay-add flex items-center justify-center z-50">
@@ -279,6 +281,9 @@ select:focus {
   }
   .card {
     z-index: 56;
+    z-index: 56;
+    max-height: 75vh;
+    overflow: auto;
   }
 }
 </style>

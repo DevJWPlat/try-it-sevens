@@ -309,6 +309,8 @@ select:focus {
   }
   .card {
     z-index: 56;
+    max-height: 75vh;
+    overflow: auto;
   }
 }
 </style>

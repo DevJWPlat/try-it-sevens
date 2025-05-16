@@ -35,9 +35,10 @@ defineProps({
           >
           <td class="px-4 py-2">{{ row.rank }}</td>
             <td class="team px-4 py-2">
-              <RouterLink :to="`/team/${row.team}`" class="text-blue-600 hover:underline">
+              <!-- <RouterLink :to="`/team/${row.team}`" class="text-blue-600 hover:underline">
                 {{ row.team }}
-              </RouterLink>
+              </RouterLink> -->
+              {{ row.team }}
             </td>
             <td class="px-4 py-2">{{ row.played }}</td>
             <td class="px-4 py-2">{{ row.points }}</td>
@@ -72,6 +73,7 @@ defineProps({
       }
       td {
         text-align: center;
+        text-transform: capitalize;
         a {
           text-decoration: underline;
           color: #000;

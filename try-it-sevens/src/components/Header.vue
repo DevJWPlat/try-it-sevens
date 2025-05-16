@@ -51,7 +51,7 @@ const navLinks = computed(() => {
     return [
       { to: '/',           text: 'Home' },
       { to: '/games',      text: 'Matches' },
-      { to: '/contact',    text: 'Contact' }
+      // { to: '/contact',    text: 'Contact' }
     ]
   }
 

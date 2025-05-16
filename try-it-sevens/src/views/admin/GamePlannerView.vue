@@ -224,7 +224,7 @@ async function deleteGame() {
 
     <button
       @click="openAdd"
-      class="btn-dark w-full mt-20"
+      class="btn-dark w-full mt-20 mb-10 "
     >
       Add Game
     </button>
@@ -265,60 +265,103 @@ async function deleteGame() {
       </table>
     </div>
 
-    <!-- Modal form (unchanged) -->
-    <div v-if="isModalOpen" class="fixed overlay-add inset-0 flex items-center justify-center z-50">
+    <!-- Add/Edit Game Modal -->
+    <div v-if="showEdit" class="fixed overlay-add inset-0 flex items-center justify-center z-50">
       <div class="wrapper-bg"></div>
       <div class="card bg-white w-full max-w-md p-6 rounded-lg shadow space-y-4">
-        <h2 class="text-lg font-bold">{{ isEditing ? 'Edit User' : 'Add User' }}</h2>
+        <h2 class="text-lg font-bold">{{ isEditing ? 'Edit Game' : 'Add Game' }}</h2>
 
         <label class="block">
-          <span>Username</span>
-          <input v-model="form.username" class="mt-1 block w-full border rounded p-2" />
-        </label>
-
-        <label class="block">
-          <span>Password</span>
-          <div class="flex items-center">
-            <input
-              :type="showFormPass ? 'text' : 'password'"
-              v-model="form.password"
-              class="mt-1 flex-1 border rounded p-2"
-            />
-            <button @click="showFormPass = !showFormPass" class="ml-2 text-sm text-gray-500">
-              {{ showFormPass ? 'Hide' : 'Show' }}
-            </button>
-          </div>
-        </label>
-
-        <label class="block">
-          <span>Access Level</span>
-          <select v-model="form.accessLevel" class="mt-1 block w-full border rounded p-2">
-            <option value="super">Super Admin</option>
-            <option value="admin">Admin</option>
-            <option value="team">Team Admin</option>
+          <span>Gender</span>
+          <select v-model="form.gender" class="mt-1 block w-full border rounded p-2">
+            <option>Male</option>
+            <option>Ladies</option>
+            <option>Juniors</option>
           </select>
         </label>
 
-        <label v-if="form.accessLevel === 'team'" class="block">
-          <span>Team</span>
-          <select v-model="form.team" class="mt-1 block w-full border rounded p-2">
-            <option value="" disabled>Select team</option>
-            <option v-for="team in teams" :key="team" :value="team">
-              {{ team }}
-            </option>
+        <label v-if="form.gender === 'Male'" class="block">
+          <span>Type</span>
+          <select v-model="form.type" class="mt-1 block w-full border rounded p-2">
+            <option>Elite</option>
+            <option>Social</option>
           </select>
+        </label>
+
+        <label class="block">
+          <span>Team A</span>
+          <select v-model="form.team_a_id" class="mt-1 block w-full border rounded p-2">
+            <option value="" disabled>Select Team A</option>
+            <option v-for="t in teamsForForm" :key="t.id" :value="t.id">{{ t.name }}</option>
+          </select>
+        </label>
+
+        <label class="block">
+          <span>Team B</span>
+          <select v-model="form.team_b_id" class="mt-1 block w-full border rounded p-2">
+            <option value="" disabled>Select Team B</option>
+            <option
+              v-for="t in teamsForForm"
+              :key="t.id"
+              :value="t.id"
+              :disabled="t.id === form.team_a_id"
+            >{{ t.name }}</option>
+          </select>
+        </label>
+
+        <label class="block">
+          <span>Date</span>
+          <input type="date" v-model="form.date" class="mt-1 block w-full border rounded p-2" />
+        </label>
+
+        <label class="block">
+          <span>Kickoff Time</span>
+          <input type="time" v-model="form.kickoff_time" class="mt-1 block w-full border rounded p-2" />
+        </label>
+
+        <label class="block">
+          <span>Pitch</span>
+          <select v-model.number="form.pitch" class="mt-1 block w-full border rounded p-2">
+            <option v-for="n in [1,2,3]" :key="n" :value="n">Pitch {{ n }}</option>
+          </select>
+        </label>
+
+        <div class="flex gap-4">
+          <label class="flex-1">
+            <span>Score A</span>
+            <input type="number" v-model.number="form.score_a" class="mt-1 block w-full border rounded p-2" />
+          </label>
+          <label class="flex-1">
+            <span>Score B</span>
+            <input type="number" v-model.number="form.score_b" class="mt-1 block w-full border rounded p-2" />
+          </label>
+        </div>
+
+        <label class="block mt-2">
+          <input type="checkbox" v-model="form.is_complete" class="mr-2" />
+          Mark game as complete
         </label>
 
         <div class="flex justify-end space-x-2 pt-2">
-          <button @click="closeModal" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-          <button @click="saveAccount" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
+          <button @click="closeEdit" class="btn-dark rounded">Cancel</button>
+          <button @click="saveGame" class="btn-sec rounded">Save</button>
+        </div>
+        <div class="flex py-4 w-full justify-end">
           <button
             v-if="isEditing"
-            @click="deleteAccount"
-            class="bg-red-600 text-white px-4 py-2 rounded"
+            @click="showDeleteConfirm = true"
+            class="btn-delete w-full rounded"
           >
             Delete
           </button>
+        </div>
+
+        <div v-if="showDeleteConfirm" class="mt-4 bg-red-100 p-4 rounded">
+          <p>Are you sure you want to delete this game?</p>
+          <div class="flex justify-end space-x-2 pt-2">
+            <button @click="deleteGame" class="btn-dark rounded">Yes</button>
+            <button @click="showDeleteConfirm = false" class="btn-sec rounded">No</button>
+          </div>
         </div>
       </div>
     </div>
@@ -359,6 +402,21 @@ async function deleteGame() {
   &:hover {
     background: #231F20;
     color: #96D1F2;
+  }
+}
+.btn-delete {
+  background: #bc2a2a;
+  padding: 12px 30px;
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #eeeeee;
+    color: #bc2a2a;
   }
 }
 
@@ -433,6 +491,8 @@ select:focus {
   }
   .card {
     z-index: 56;
+    max-height: 75vh;
+    overflow: auto;
   }
 }
 </style>
