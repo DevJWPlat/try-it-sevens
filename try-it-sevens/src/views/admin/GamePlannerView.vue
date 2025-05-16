@@ -224,13 +224,13 @@ async function deleteGame() {
 
     <button
       @click="openAdd"
-      class="block w-full py-3 bg-black text-white rounded hover:bg-gray-800 transition"
+      class="btn-dark w-full mt-20"
     >
       Add Game
     </button>
 
     <div class="overflow-x-auto border border-gray-300 rounded-lg">
-      <table class="w-full text-left">
+      <table class="custom-table w-full text-left">
         <thead class="bg-gray-200">
           <tr>
             <th class="px-3 py-2">Team A</th>
@@ -266,9 +266,173 @@ async function deleteGame() {
     </div>
 
     <!-- Modal form (unchanged) -->
+    <div v-if="isModalOpen" class="fixed overlay-add inset-0 flex items-center justify-center z-50">
+      <div class="wrapper-bg"></div>
+      <div class="card bg-white w-full max-w-md p-6 rounded-lg shadow space-y-4">
+        <h2 class="text-lg font-bold">{{ isEditing ? 'Edit User' : 'Add User' }}</h2>
+
+        <label class="block">
+          <span>Username</span>
+          <input v-model="form.username" class="mt-1 block w-full border rounded p-2" />
+        </label>
+
+        <label class="block">
+          <span>Password</span>
+          <div class="flex items-center">
+            <input
+              :type="showFormPass ? 'text' : 'password'"
+              v-model="form.password"
+              class="mt-1 flex-1 border rounded p-2"
+            />
+            <button @click="showFormPass = !showFormPass" class="ml-2 text-sm text-gray-500">
+              {{ showFormPass ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+        </label>
+
+        <label class="block">
+          <span>Access Level</span>
+          <select v-model="form.accessLevel" class="mt-1 block w-full border rounded p-2">
+            <option value="super">Super Admin</option>
+            <option value="admin">Admin</option>
+            <option value="team">Team Admin</option>
+          </select>
+        </label>
+
+        <label v-if="form.accessLevel === 'team'" class="block">
+          <span>Team</span>
+          <select v-model="form.team" class="mt-1 block w-full border rounded p-2">
+            <option value="" disabled>Select team</option>
+            <option v-for="team in teams" :key="team" :value="team">
+              {{ team }}
+            </option>
+          </select>
+        </label>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button @click="closeModal" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+          <button @click="saveAccount" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
+          <button
+            v-if="isEditing"
+            @click="deleteAccount"
+            class="bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
-<style scoped>
-/* no extra styles */
+<style lang="scss" scoped>
+.btn-dark {
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #96D1F2;
+    color: #231F20;
+  }
+  &.add-teams {
+    margin-top: 36px;
+    width: 100%;
+  }
+}
+
+.btn-sec {
+  background: #96D1F2;
+  padding: 12px 30px;
+  color: #231F20;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #231F20;
+    color: #96D1F2;
+  }
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #a0d8ef;
+}
+
+.custom-table {
+  border: none;
+  width: 100%;
+  overflow: scroll;
+  thead {
+    tr {
+      border-top: none;
+      border-right:  1px solid #fff;
+      background: #231F20;
+      th {
+        color: #fff;
+        font-weight: 400;
+        width: 100%;
+      }
+    }
+  }
+  tbody {
+    tr {
+      background: #96D1F2;
+      color: #231F20;
+      &:nth-child(even) {
+        background: #96d1f27d;
+      }
+      td {
+        text-align: left;
+        border-left: none;
+        border-right: 1px solid #fff;
+        button {
+          color: #231F20;
+          font-weight: 500;
+          transition: all .3s;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      .edits-delete {
+        text-align: center;
+        .edit {
+          &:hover {
+            color: green;
+          }
+        }
+        .delete {
+          &:hover {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+  
+}
+.overlay-add {
+  height: 100vh;
+  .wrapper-bg {
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    background-color: rgb(0 0 0 / 70%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .card {
+    z-index: 56;
+  }
+}
 </style>

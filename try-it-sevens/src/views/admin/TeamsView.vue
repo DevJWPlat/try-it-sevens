@@ -99,7 +99,7 @@ onMounted(fetchTeams)
     />
 
     <div class="overflow-x-auto">
-      <table class="min-w-full text-left border-collapse">
+      <table class="custom-table min-w-full text-left rounded-lg border-collapse">
         <thead>
           <tr class="bg-gray-200">
             <th class="px-4 py-2">Name</th>
@@ -112,21 +112,22 @@ onMounted(fetchTeams)
           <tr v-for="team in teams" :key="team.id" class="even:bg-gray-50">
             <td class="px-4 py-2">{{ team.name }}</td>
             <td class="px-4 py-2">{{ team.gender }}</td>
-            <td class="px-4 py-2">{{ team.type || '-' }}</td>
-            <td class="px-4 py-2 text-right">
-              <button @click.prevent="openEdit(team)" class="text-blue-600 hover:underline">Edit</button>
-              <button @click.prevent="deleteTeam(team.id)" class="ml-2 text-red-600 hover:underline">Delete</button>
+            <td class="px-4 py-2">{{ team.type || '' }}</td>
+            <td class="px-4 py-2 edits-delete">
+              <button @click.prevent="openEdit(team)" class="edit">Edit</button>
+              <button @click.prevent="deleteTeam(team.id)" class="delete">Delete</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <button @click="openAdd" class="btn mt-4">Add Team</button>
+    <button @click="openAdd" class="btn-dark add-teams">Add Team</button>
 
     <!-- Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-white w-full max-w-md p-6 rounded-lg space-y-4">
+    <div v-if="showModal" class="fixed inset-0 overlay-add flex items-center justify-center z-50">
+      <div class="wrapper-bg"></div>
+      <div class="card bg-white w-full max-w-md p-6 rounded-lg space-y-4">
         <h2 class="text-lg font-bold">{{ isEditing ? 'Edit Team' : 'Add Team' }}</h2>
 
         <label class="block">
@@ -151,24 +152,133 @@ onMounted(fetchTeams)
           </select>
         </label>
 
-        <label class="block">
+        <!-- <label class="block">
           <span>Description</span>
           <textarea v-model="form.description" class="mt-1 block w-full border rounded p-2 h-24"></textarea>
-        </label>
+        </label> -->
 
-        <label class="block">
+        <!-- <label class="block">
           <span>Contact Email</span>
           <input v-model="form.contact_email" class="mt-1 block w-full border rounded p-2" />
-        </label>
+        </label> -->
 
         <div class="flex justify-end space-x-2 pt-2">
-          <button @click="showModal = false" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-          <button @click="saveTeam" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
+          <button @click="showModal = false" class="btn-dark rounded">Cancel</button>
+          <button @click="saveTeam" class="btn-sec rounded">Save</button>
         </div>
       </div>
     </div>
   </main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.btn-dark {
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #96D1F2;
+    color: #231F20;
+  }
+  &.add-teams {
+    margin-top: 36px;
+    width: 100%;
+  }
+}
+
+.btn-sec {
+  background: #96D1F2;
+  padding: 12px 30px;
+  color: #231F20;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #231F20;
+    color: #96D1F2;
+  }
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #a0d8ef;
+}
+
+.custom-table {
+  border: none;
+  width: 100%;
+  overflow: scroll;
+  thead {
+    tr {
+      border-top: none;
+      border-right:  1px solid #fff;
+      background: #231F20;
+      th {
+        color: #fff;
+        font-weight: 400;
+        width: 100%;
+      }
+    }
+  }
+  tbody {
+    tr {
+      background: #96D1F2;
+      color: #231F20;
+      &:nth-child(even) {
+        background: #96d1f27d;
+      }
+      td {
+        text-align: left;
+        border-left: none;
+        border-right: 1px solid #fff;
+        button {
+          color: #231F20;
+          font-weight: 500;
+          transition: all .3s;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      .edits-delete {
+        text-align: center;
+        .edit {
+          &:hover {
+            color: green;
+          }
+        }
+        .delete {
+          &:hover {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+  
+}
+.overlay-add {
+  height: 100vh;
+  .wrapper-bg {
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    background-color: rgb(0 0 0 / 70%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .card {
+    z-index: 56;
+  }
+}
 </style>

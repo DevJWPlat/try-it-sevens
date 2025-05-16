@@ -106,7 +106,7 @@ async function submitForm() {
 
     <!-- Team Form -->
     <form @submit.prevent="submitForm" class="space-y-6">
-        <div>
+        <!-- <div>
             <label class="block mb-1 text-sm font-medium">Team Logo</label>
             <input
               type="file"
@@ -124,7 +124,7 @@ async function submitForm() {
                 class="max-h-full max-w-full object-contain"
               />
             </div>
-        </div>
+        </div> -->
       <div>
         <label class="block mb-1 text-sm font-medium">Team Name</label>
         <input

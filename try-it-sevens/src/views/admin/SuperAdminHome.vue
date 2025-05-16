@@ -20,25 +20,24 @@ function clearAll() {
 
 <template>
   <main class="wrapper pt-20 max-w-sm mx-auto space-y-6 text-center">
-    <h1 class="text-2xl font-bold">Super Admin Dashboard</h1>
 
     <button
       @click="go('/admin/accounts')"
-      class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+      class="block w-full rounded-lg btn-dark transition"
     >
       Manage Accounts
     </button>
 
     <button
       @click="go('/admin/teams')"
-      class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+      class="block w-full rounded-lg btn-dark transition"
     >
       Manage Teams
     </button>
 
     <button
       @click="go('/admin/games')"
-      class="block w-full py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+      class="block w-full rounded-lg btn-dark transition"
     >
       Game Planner
     </button>
@@ -50,24 +49,38 @@ function clearAll() {
       Manage Sponsors
     </button> -->
 
-    <hr class="my-4"/>
+    <!-- <hr class="my-4"/> -->
 
-    <button
+    <!-- <button 
       @click="logout"
       class="block w-full py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
     >
       Log out
-    </button>
+    </button> -->
 
-    <button
+    <!-- <button
       @click="clearAll"
       class="block w-full py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
     >
       Clear All Data
-    </button>
+    </button> -->
   </main>
 </template>
 
-<style scoped>
-/* Optional: additional styling here */
+<style lang="scss" scoped>
+.btn-dark {
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #96D1F2;
+    color: #231F20;
+  }
+}
 </style>

@@ -135,13 +135,13 @@ onUnmounted(() => {
 
     <div class="flex justify-between">
       <h2 class="text-xl font-bold">Manage Accounts</h2>
-      <button @click="openAdd" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+      <button @click="openAdd" class="btn-dark">
         Add User
       </button>
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full text-left border border-gray-300 rounded-lg overflow-hidden">
+      <table class="custom-table min-w-full text-left border rounded-lg overflow-hidden">
         <thead class="bg-gray-200 text-gray-700">
           <tr>
             <th class="px-4 py-2">Username</th>
@@ -154,7 +154,7 @@ onUnmounted(() => {
           <tr v-for="user in accounts" :key="user.id" class="even:bg-gray-50 hover:bg-green-50 transition">
             <td class="px-4 py-2">{{ user.username }}</td>
             <td class="px-4 py-2">{{ user.access }}</td>
-            <td class="px-4 py-2">{{ user.team || '—' }}</td>
+            <td class="px-4 py-2">{{ user.team || '' }}</td>
             <td class="px-4 py-2">
               <button @click="openEdit(user)" class="text-blue-600 hover:underline">Edit</button>
             </td>
@@ -164,8 +164,9 @@ onUnmounted(() => {
     </div>
 
     <!-- Modal -->
-    <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white w-full max-w-md p-6 rounded-lg shadow space-y-4">
+    <div v-if="isModalOpen" class="overlay-add fixed inset-0 z-50 flex items-center justify-center">
+      <div class="wrapper-bg"></div>
+      <div class="card bg-white w-full max-w-md p-6 rounded-lg shadow space-y-4">
         <h2 class="text-lg font-bold">{{ isEditing ? 'Edit User' : 'Add User' }}</h2>
 
         <label class="block">
@@ -190,7 +191,6 @@ onUnmounted(() => {
         <label class="block">
           <span>Access Level</span>
           <select v-model="form.accessLevel" class="mt-1 block w-full border rounded p-2">
-            <option value="super">Super Admin</option>
             <option value="admin">Admin</option>
             <option value="team">Team Admin</option>
           </select>
@@ -207,8 +207,8 @@ onUnmounted(() => {
         </label>
 
         <div class="flex justify-end space-x-2 pt-2">
-          <button @click="closeModal" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-          <button @click="saveAccount" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
+          <button @click="closeModal" class="btn-sec rounded">Cancel</button>
+          <button @click="saveAccount" class="btn-dark rounded">Save</button>
           <button
             v-if="isEditing"
             @click="deleteAccount"
@@ -218,14 +218,97 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
+      
     </div>
   </main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.btn-dark {
+  background: #231F20;
+  padding: 12px 30px;
+  color: #96D1F2;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #96D1F2;
+    color: #231F20;
+  }
+}
+
+.btn-sec {
+  background: #96D1F2;
+  padding: 12px 30px;
+  color: #231F20;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  display: block;
+  text-align: center;
+  transition: all .3s;
+  &:hover {
+    background: #231F20;
+    color: #96D1F2;
+  }
+}
+
 input:focus,
 select:focus {
   outline: none;
   box-shadow: 0 0 0 2px #a0d8ef;
+}
+
+.custom-table {
+  border: none;
+  thead {
+    tr {
+      border-top: none;
+      border-right:  1px solid #fff;
+      background: #231F20;
+      th {
+        color: #fff;
+        font-weight: 400;
+        width: 100%;
+      }
+    }
+  }
+  tbody {
+    tr {
+      background: #96D1F2;
+      color: #231F20;
+      &:nth-child(even) {
+        background: #96d1f27d;
+      }
+      td {
+        text-align: left;
+        border-left: none;
+        border-right: 1px solid #fff;
+        button {
+          text-decoration: underline;
+          color: #231F20;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+}
+.overlay-add {
+  height: 100vh;
+  .wrapper-bg {
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    background-color: rgb(0 0 0 / 70%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .card {
+    z-index: 56;
+  }
 }
 </style>
