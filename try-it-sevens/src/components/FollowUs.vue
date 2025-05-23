@@ -10,19 +10,19 @@ import tiktok from '@/assets/images/socials/t.png'
     <div class="wrapper">
         <h2 class="main-sub-heading mb-4">Follow us</h2>
         <div class="flex icons-wrapped">
-            <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="Youtube" class="a-icon">
+            <a href="https://www.youtube.com/@tryitrugby" target="_blank" rel="noopener" aria-label="Youtube" class="a-icon">
                 <img :src="youtube" alt="youtube" class="social-icon" />
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook" class="a-icon">
+            <a href="https://www.facebook.com/TryItRugbyAcademy/" target="_blank" rel="noopener" aria-label="Facebook" class="a-icon">
                 <img :src="facebook" alt="facebook" class="social-icon" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram" class="a-icon">
+            <a href="https://www.instagram.com/tryit_rugby/" target="_blank" rel="noopener" aria-label="Instagram" class="a-icon">
                 <img :src="insta" alt="instagram" class="social-icon" />
             </a>
-            <a href="https://x.com" target="_blank" rel="noopener" aria-label="X" class="a-icon">
+            <a href="https://x.com/RugbyTryit" target="_blank" rel="noopener" aria-label="X" class="a-icon">
                 <img :src="x" alt="x" class="social-icon" />
             </a>
-            <a href="https://tiktok.com" target="_blank" rel="noopener" aria-label="TikTok" class="a-icon">
+            <a href="https://www.tiktok.com/@tryit_rugby" target="_blank" rel="noopener" aria-label="TikTok" class="a-icon">
                 <img :src="tiktok" alt="tiktok" class="social-icon" />
             </a>
         </div>

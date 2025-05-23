@@ -69,23 +69,13 @@ function formatDate(dateInput) {
         Kickoff: <span v-if="g.kickoffTime">{{ formatTime(g.kickoffTime) }}</span><span v-else>Time TBD</span> | Pitch: {{ g.pitch }}
       </p>
       <div class="match my-4 text-center">
-        <RouterLink
-          :to="`/team/${g.teamA}`"
-          class="team-home font-semibold hover:underline"
-        >
-          {{ g.teamA }}
-        </RouterLink>
+        <span>{{ g.teamA }}</span>
         <span class="score mx-2">
           <span class="score-box">{{ g.score_a ?? 0 }}</span>
            : 
           <span class="score-box">{{ g.score_b ?? 0 }}</span>
         </span>
-        <RouterLink
-          :to="`/team/${g.teamB}`"
-          class="team-away font-semibold hover:underline"
-        >
-          {{ g.teamB }}
-        </RouterLink>
+        <span>{{ g.teamB }}</span>
       </div>
     </div>
   </section>

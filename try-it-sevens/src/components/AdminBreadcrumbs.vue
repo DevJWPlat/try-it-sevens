@@ -30,7 +30,7 @@ const pageTitle = computed(() => {
   <nav aria-label="Breadcrumb" class="mb-4 text-sm">
     <ol class="inline-flex items-center space-x-2">
       <li>
-        <RouterLink to="/super-admin" class="text-gray-600 hover:text-gray-800">
+        <RouterLink to="/admin" class="text-gray-600 hover:text-gray-800">
           Admin Dashboard
         </RouterLink>
       </li>

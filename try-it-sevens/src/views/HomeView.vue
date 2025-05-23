@@ -39,18 +39,23 @@ function classifyGames() {
 
   // bucket
   for (const g of list) {
-    const kickoff = new Date(g.kickoffTime)
-    const diff    = (kickoff - now) / 60000
+    if (!g.kickoffTime) {
+      upcomingGames.value.push(g)
+      continue
+    }
 
-   // within 5m before or after → Current
+    const kickoff = new Date(g.kickoffTime)
+    if (isNaN(kickoff)) {
+      console.warn('Invalid kickoffTime:', g.kickoffTime)
+      continue
+    }
+
+    const diff = (kickoff - now) / 60000
+
     if (diff >= -5 && diff <= 5) {
       currentGames.value.push(g)
-
-    // more than 5m before → Upcoming
     } else if (diff > 5) {
       upcomingGames.value.push(g)
-
-    // otherwise → Previous
     } else {
       previousGames.value.push(g)
     }
@@ -137,32 +142,35 @@ onUnmounted(() => {
     </div>
 
     <template v-if="activeSection === 'current'">
-      <!-- when we have games -->
       <template v-if="currentGames.length">
-        <GamesList
-          :games="currentGames"
-          title="Current Games"
-          highlightSecond
-        />
-        <RouterLink to="/games" class="v-all">View all</RouterLink>
+        <GamesList :games="currentGames" title="Current Games" highlightSecond />
       </template>
-    
-      <!-- when we have no games -->
       <p v-else class="text-center text-gray-500">
         There are no matches at the moment
       </p>
+      <RouterLink to="/games" class="v-all">View all</RouterLink>
     </template>
     
-
     <template v-else-if="activeSection === 'upcoming'">
-      <GamesList :games="upcomingGames" title="Upcoming Games" highlightSecond />
+      <template v-if="upcomingGames.length">
+        <GamesList :games="upcomingGames" title="Upcoming Games" highlightSecond />
+      </template>
+      <p v-else class="text-center text-gray-500">
+        There are no upcoming matches
+      </p>
       <RouterLink to="/games" class="v-all">View all</RouterLink>
     </template>
-
+    
     <template v-else>
-      <GamesList :games="previousGames" title="Previous Games" highlightSecond />
+      <template v-if="previousGames.length">
+        <GamesList :games="previousGames" title="Previous Games" highlightSecond />
+      </template>
+      <p v-else class="text-center text-gray-500">
+        No matches have been played yet
+      </p>
       <RouterLink to="/games" class="v-all">View all</RouterLink>
     </template>
+    
 
     <div class="spacer"></div>
 

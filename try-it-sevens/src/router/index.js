@@ -101,7 +101,13 @@ const routes = [
     path: '/team-admin',
     component: TeamAdminHome,
     beforeEnter: requireAccess('team')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue')
   }
+  
 ]
 
 export default createRouter({

@@ -6,6 +6,7 @@ import GenderButtons from '@/components/GenderButtons.vue'
 import GamesList from '@/components/GamesList.vue'
 import MapDisplay from '@/components/MapDisplay.vue'
 
+
 const store = useGamesStore()
 
 const selectedGender = ref('Male')
@@ -22,8 +23,19 @@ function classifyGames() {
   previousGames.value = []
 
   for (const g of store.list) {
+    if (!g.kickoffTime) {
+      // You can choose where unscheduled games go — here, we’ll treat them as "upcoming"
+      upcomingGames.value.push(g)
+      continue
+    }
+
     const kickoff = new Date(g.kickoffTime)
-    const diffMin  = (kickoff - now) / 60000
+    if (isNaN(kickoff)) {
+      console.warn('Invalid kickoffTime:', g.kickoffTime)
+      continue
+    }
+
+    const diffMin = (kickoff - now) / 60000
 
     if (diffMin >= -5 && diffMin <= 5) {
       currentGames.value.push(g)
@@ -34,6 +46,7 @@ function classifyGames() {
     }
   }
 }
+
 
 async function handleSelection({ gender, type }) {
   selectedGender.value = gender
@@ -48,6 +61,17 @@ onMounted(async () => {
   classifyGames()
   setInterval(classifyGames, 60_000)
 })
+
+const typeImage = computed(() => {
+  if (selectedGender.value === 'Ladies') return ladiesImage
+
+  switch (selectedType.value) {
+    case 'Elite': return eliteImage
+    case 'Social': return socialImage
+    default: return ''
+  }
+})
+
 </script>
 
 <template>
@@ -84,6 +108,7 @@ onMounted(async () => {
     <p v-else class="text-center text-gray-500">
       No matches have been played yet
     </p>
+
     <MapDisplay />
   </main>
 </template>
