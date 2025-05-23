@@ -35,7 +35,7 @@ const pageTitle = computed(() => {
   switch (route.path) {
     case '/': return 'TryIt Sevens'
     case '/scoreboard': return 'Scoreboard'
-    case '/games': return 'Matches'
+    case '/games': return 'Games'
     case '/map': return 'Map'
     case '/contact': return 'Contact'
     case '/login': return 'Login'
@@ -50,7 +50,7 @@ const navLinks = computed(() => {
   if (!auth.loggedIn) {
     return [
       { to: '/',           text: 'Home' },
-      { to: '/games',      text: 'Matches' },
+      { to: '/games',      text: 'Games' },
       // { to: '/contact',    text: 'Contact' }
     ]
   }

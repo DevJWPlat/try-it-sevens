@@ -1,6 +1,5 @@
-<!-- src/views/GamesView.vue -->
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useGamesStore } from '@/stores/games'
 import GenderButtons from '@/components/GenderButtons.vue'
 import GamesList from '@/components/GamesList.vue'
@@ -9,6 +8,7 @@ import MapDisplay from '@/components/MapDisplay.vue'
 
 const store = useGamesStore()
 
+// Default filter values
 const selectedGender = ref('Male')
 const selectedType   = ref('Elite')
 
@@ -24,7 +24,6 @@ function classifyGames() {
 
   for (const g of store.list) {
     if (!g.kickoffTime) {
-      // You can choose where unscheduled games go — here, we’ll treat them as "upcoming"
       upcomingGames.value.push(g)
       continue
     }
@@ -47,17 +46,20 @@ function classifyGames() {
   }
 }
 
-
 async function handleSelection({ gender, type }) {
   selectedGender.value = gender
   selectedType.value   = gender === 'Male' ? type : 'All'
 
+  console.log('handleSelection →', gender, selectedType.value)
   await store.fetchGames({ gender, type: selectedType.value })
+  console.log('Games fetched:', store.list)
   classifyGames()
 }
 
 onMounted(async () => {
+  console.log('onMounted fetching with:', selectedGender.value, selectedType.value)
   await store.fetchGames({ gender: selectedGender.value, type: selectedType.value })
+  console.log('Games fetched:', store.list)
   classifyGames()
   setInterval(classifyGames, 60_000)
 })
@@ -71,8 +73,8 @@ const typeImage = computed(() => {
     default: return ''
   }
 })
-
 </script>
+
 
 <template>
   <main class="wrapper space-y-10">
