@@ -31,14 +31,13 @@ export default defineConfig({
     strictPort: true,
     allowedHosts,
   },
-  // css: {
-  //   preprocessorOptions: {
-  //     scss: {
-  //       additionalData: 
-  //         `@import "src/assets/styles/_global.scss";`
-  //     }
-  //   }
-  // }
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html'
+      }
+    }
+  },
 })
 
 
