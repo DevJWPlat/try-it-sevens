@@ -142,7 +142,7 @@ onMounted(fetchTeams)
           <select v-model="form.gender" class="mt-1 block w-full border rounded p-2">
             <option>Male</option>
             <option>Ladies</option>
-            <option>Juniors</option>
+            <!-- <option>Juniors</option> -->
           </select>
         </label>
 

@@ -1,7 +1,7 @@
 <!-- src/views/HomeView.vue -->
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import GenderButtons from '@/components/GenderButtons.vue'
 import ScoreboardPreview from '@/components/ScoreboardPreview.vue'
 import GamesList from '@/components/GamesList.vue'
@@ -42,13 +42,16 @@ function classifyGames() {
     const kickoff = new Date(g.kickoffTime)
     const diff    = (kickoff - now) / 60000
 
-    if (diff >= -5 && diff <= 20) {
+   // within 5m before or after → Current
+    if (diff >= -5 && diff <= 5) {
       currentGames.value.push(g)
-    }
-    else if (diff > 20) {
+
+    // more than 5m before → Upcoming
+    } else if (diff > 5) {
       upcomingGames.value.push(g)
-    }
-    else {
+
+    // otherwise → Previous
+    } else {
       previousGames.value.push(g)
     }
   }
@@ -70,12 +73,13 @@ async function handleSelection({ gender, type }) {
   selectedType.value   = type
 
   await gamesStore.fetchGames({ gender, type })
+  
   await scoreboardStore.fetchByCategory(gender, type)
   classifyGames()
 }
 
 function goTo(section) {
-  router.push({ path: '/games', hash: `#${section}` })
+  router.push({ path: '/games' })
 }
 
 // manual override when clicking toggle buttons

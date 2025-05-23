@@ -1,6 +1,5 @@
-<!-- src/views/admin/GamePlannerView.vue -->
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useScoreboardStore } from '@/stores/scoreboard'
 import { useRouter } from 'vue-router'
@@ -22,12 +21,22 @@ function handleSelection({ gender, type }) {
 const teams     = ref([])
 const teamMap   = ref({})
 const allGames  = ref([])
+
 const filteredGames = computed(() =>
   allGames.value.filter(g =>
     g.gender === selectedGender.value &&
-    (g.type || 'default') === (selectedType.value || 'default')
+    (
+      selectedGender.value !== 'Male' || // if not Male, ignore type
+      g.type === selectedType.value      // only match type if Male
+    )
   )
 )
+
+// Log for debugging
+watch([allGames, selectedGender, selectedType], () => {
+  console.log('Filters:', selectedGender.value, selectedType.value)
+  console.log('Games:', allGames.value)
+})
 
 // Fetch initial data
 async function fetchData() {
@@ -68,7 +77,7 @@ function openAdd() {
   Object.assign(form, {
     id: null,
     gender: selectedGender.value,
-    type: selectedType.value || 'default',
+    type: selectedType.value || 'All',
     team_a_id: '',
     team_b_id: '',
     score_a: 0,
@@ -94,9 +103,14 @@ function openEditGame(game) {
     pitch: game.pitch,
     is_complete: game.is_complete
   })
+  if (game.kickoff_time) {
   const [date, time] = game.kickoff_time.split('T')
-  form.date         = date
-  form.kickoff_time = time?.slice(0,5) || ''
+    form.date = date
+    form.kickoff_time = time?.slice(0, 5) || ''
+  } else {
+    form.date = game.date || new Date().toISOString().split('T')[0]
+    form.kickoff_time = ''
+  }
   showEdit.value    = true
 }
 
@@ -123,25 +137,16 @@ async function updateScoreboardOnComplete(game) {
       : { [team_a_id]: 2, [team_b_id]: 2 }
 
   for (const [teamId, pts] of Object.entries(points)) {
-    const { data: existing, error: fetchErr } = await supabase
+    const { data: existing } = await supabase
       .from('scoreboard')
-      .insert([{
-        team_id: teamId,
-        gender,        // ← the new column
-        type,
-        played:  1,
-        points:  pts,
-        wins:    pts === 3 ? 1 : 0,
-        draws:   pts === 2 ? 1 : 0,
-        losses:  pts === 1 ? 1 : 0
-      }]);
-    if (fetchErr) {
-      console.error(`Lookup error for team ${teamId}:`, fetchErr)
-      continue
-    }
+      .select('*')
+      .eq('team_id', teamId)
+      .eq('type', type)
+      .eq('gender', gender)
+      .maybeSingle()
 
     if (existing) {
-      const { error } = await supabase
+      await supabase
         .from('scoreboard')
         .update({
           played: existing.played + 1,
@@ -153,9 +158,8 @@ async function updateScoreboardOnComplete(game) {
         .eq('team_id', teamId)
         .eq('type', type)
         .eq('gender', gender)
-      console.log(`Updated scoreboard for team ${teamId}`, error || 'success')
     } else {
-      const { error } = await supabase
+      await supabase
         .from('scoreboard')
         .insert([{
           team_id: teamId,
@@ -167,51 +171,77 @@ async function updateScoreboardOnComplete(game) {
           draws:   pts === 2 ? 1 : 0,
           losses:  pts === 1 ? 1 : 0
         }])
-      console.log(`Inserted scoreboard for team ${teamId}`, error || 'success')
     }
   }
 }
 
 async function saveGame() {
+  console.log('Saving game...', JSON.stringify(form, null, 2))
+
   const payload = {
     gender: form.gender,
-    type:   form.type,
+    type: form.type || 'All',
     team_a_id:     form.team_a_id,
     team_b_id:     form.team_b_id,
     score_a:       form.score_a,
     score_b:       form.score_b,
-    kickoff_time:  `${form.date}T${form.kickoff_time}`,
+    kickoff_time: form.kickoff_time ? `${form.date}T${form.kickoff_time}` : null,
     date:          form.date,
     pitch:         form.pitch,
     is_complete:   form.is_complete
   }
 
   if (isEditing.value) {
-    await supabase.from('games').update(payload).eq('id', form.id)
+    const { error } = await supabase.from('games').update(payload).eq('id', form.id)
+    if (error) {
+      console.error('Update error:', error)
+    }
   } else {
-    const { data } = await supabase.from('games')
+    const { data, error } = await supabase.from('games')
       .insert([payload])
       .select()
       .single()
+
+    if (error) {
+      console.error('Insert error:', error)
+      return
+    }
+
+    console.log('Inserted game:', data)
     form.id = data?.id
   }
 
   if (form.is_complete) {
-    await updateScoreboardOnComplete({ ...form })
+    await updateScoreboardOnComplete({
+      ...form,
+      type: 'All',
+      gender: null
+    })
+    if (form.gender === 'Male' && form.type !== 'All') {
+      await updateScoreboardOnComplete({ ...form })
+    }
   }
 
   await scoreboardStore.fetchByCategory(form.gender, form.type)
   await fetchData()
   closeEdit()
-  router.push('/')
 }
 
+
 async function deleteGame() {
-  await supabase.from('games').delete().eq('id', form.id)
+  console.log('Deleting game ID:', form.id)
+  const { error } = await supabase.from('games').delete().eq('id', form.id)
+  if (error) {
+    console.error('Delete error:', error)
+  } else {
+    console.log('Deleted game')
+  }
   await fetchData()
   closeEdit()
 }
 </script>
+
+
 
 <template>
   <main class="wrapper pt-20 space-y-6 max-w-2xl mx-auto">
@@ -276,7 +306,7 @@ async function deleteGame() {
           <select v-model="form.gender" class="mt-1 block w-full border rounded p-2">
             <option>Male</option>
             <option>Ladies</option>
-            <option>Juniors</option>
+            <!-- <option>Juniors</option> -->
           </select>
         </label>
 

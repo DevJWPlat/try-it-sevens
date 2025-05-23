@@ -9,35 +9,7 @@ const selectedGender = ref('Male')
 const selectedType   = ref('Elite')
 
 // Stubbed data for each category
-const allTables = {
-  Male: {
-    Elite: [
-      { team: 'Tigers', played: 3, wins: 3, draws: 0, losses: 0, points: 9 },
-      { team: 'Lions',  played: 3, wins: 2, draws: 0, losses: 1, points: 6 },
-      { team: 'Bulls',  played: 3, wins: 1, draws: 0, losses: 2, points: 3 },
-      { team: 'Wolves', played: 3, wins: 0, draws: 1, losses: 2, points: 1 }
-    ],
-    Social: [
-      { team: 'Otters',  played: 3, wins: 2, draws: 1, losses: 0, points: 7 },
-      { team: 'Badgers', played: 3, wins: 1, draws: 1, losses: 1, points: 4 },
-      { team: 'Hares',   played: 3, wins: 0, draws: 0, losses: 3, points: 0 }
-    ]
-  },
-  Ladies: {
-    default: [
-      { team: 'Queens',    played: 3, wins: 3, draws: 0, losses: 0, points: 9 },
-      { team: 'Stars',     played: 3, wins: 1, draws: 1, losses: 1, points: 4 },
-      { team: 'Valkyries', played: 3, wins: 0, draws: 0, losses: 3, points: 0 }
-    ]
-  },
-  Juniors: {
-    default: [
-      { team: 'Mini Tigers', played: 3, wins: 2, draws: 0, losses: 1, points: 6 },
-      { team: 'Tiny Bulls',  played: 3, wins: 1, draws: 0, losses: 2, points: 3 },
-      { team: 'Young Lions', played: 3, wins: 0, draws: 1, losses: 2, points: 1 }
-    ]
-  }
-}
+
 
 // Pull out the right table
 const rows = computed(() => {

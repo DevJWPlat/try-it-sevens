@@ -17,14 +17,31 @@ defineProps({
 })
 
 function formatTime(kickoff) {
+  // parse as UTC so we don’t get local (+1h DST) offsets
   const d = kickoff instanceof Date ? kickoff : new Date(kickoff)
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleTimeString('en-GB', {
+    hour:   '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'UTC'
+  })
 }
 
 function formatDate(dateInput) {
   const d = dateInput instanceof Date ? dateInput : new Date(dateInput)
-  const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(d)
+
+  const today = new Date()
+  const isToday =
+    d.getDate() === today.getDate() &&
+    d.getMonth() === today.getMonth() &&
+    d.getFullYear() === today.getFullYear()
+
+  if (isToday) return 'Today'
+
+  const weekday = new Intl.DateTimeFormat('en-GB', { weekday: 'long' }).format(d)
   const day = d.getDate()
+  const month = new Intl.DateTimeFormat('en-GB', { month: 'long' }).format(d)
+
   const suffix = (n => {
     const j = n % 10, k = n % 100
     if (j === 1 && k !== 11) return 'st'
@@ -32,8 +49,10 @@ function formatDate(dateInput) {
     if (j === 3 && k !== 13) return 'rd'
     return 'th'
   })(day)
-  return `${weekday} ${day}${suffix}`
+
+  return `${weekday} ${day}${suffix} ${month}`
 }
+
 </script>
 
 <template>
@@ -47,7 +66,7 @@ function formatDate(dateInput) {
         {{ formatDate(g.date) }}
       </p>
       <p class="text-center text-sm mt-2">
-        Kickoff: {{ formatTime(g.kickoffTime) }} | Pitch: {{ g.pitch }}
+        Kickoff: <span v-if="g.kickoffTime">{{ formatTime(g.kickoffTime) }}</span><span v-else>Time TBD</span> | Pitch: {{ g.pitch }}
       </p>
       <div class="match my-4 text-center">
         <RouterLink

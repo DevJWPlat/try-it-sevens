@@ -49,14 +49,14 @@ function selectType(type) {
       >
         Ladies
       </button>
-      <button
+      <!-- <button
         class="gender-btn-main transition"
         :class="{ 'bg-[#96D1F2] text-black': selectedGender === 'Juniors',
         'text-white': props.selectedGender !== 'Juniors' }"
         @click="selectGender('Juniors')"
       >
         Juniors
-      </button>
+      </button> -->
     </div>
 
     <!-- only for Male -->
@@ -94,7 +94,7 @@ function selectType(type) {
 
 .gender-btn-main {
   cursor: pointer;
-  width: calc((100% - 32px) / 3);
+  width: calc(50% - 8px);
   padding: 16px 8px;
   border-radius: 12px;
   font-weight: 600;

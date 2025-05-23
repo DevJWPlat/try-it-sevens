@@ -25,9 +25,9 @@ function classifyGames() {
     const kickoff = new Date(g.kickoffTime)
     const diffMin  = (kickoff - now) / 60000
 
-    if (diffMin >= -5 && diffMin <= 20) {
+    if (diffMin >= -5 && diffMin <= 5) {
       currentGames.value.push(g)
-    } else if (diffMin > 20) {
+    } else if (diffMin > 5) {
       upcomingGames.value.push(g)
     } else {
       previousGames.value.push(g)
