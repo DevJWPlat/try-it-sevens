@@ -111,7 +111,20 @@ const typeImage = computed(() => {
       No matches have been played yet
     </p>
 
+    <span class="disclamer">
+      <b>Please note:</b> Game times and scores may not update immediately. Our volunteer organisers do their best to keep everything up to date, but there may be delays during busy periods. Thanks for your patience!
+    </span>
+
+
     <MapDisplay />
   </main>
 </template>
 
+
+<style scoped>
+  .disclamer {
+    display: block;
+    font-size: 14px;
+    color: #6e6e6e;
+  }
+</style>

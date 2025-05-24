@@ -116,6 +116,10 @@ onUnmounted(() => {
 
     <ScoreboardPreview :rows="scoreboardStore.table" />
 
+    <span class="disclamer">
+      <b>Please note:</b> Game times and scores may not update immediately. Our volunteer organisers do their best to keep everything up to date, but there may be delays during busy periods. Thanks for your patience!
+    </span>
+
     <h2 class="main-sub-heading mb-4">Matches</h2>
     <div class="toggle-container">
       <button
@@ -170,8 +174,13 @@ onUnmounted(() => {
       </p>
       <RouterLink to="/games" class="v-all">View all</RouterLink>
     </template>
-    
 
+    <div class="spacer"></div>
+
+    <span class="disclamer">
+      <b>Please note:</b> Game times and scores may not update immediately. Our volunteer organisers do their best to keep everything up to date, but there may be delays during busy periods. Thanks for your patience!
+    </span>
+    
     <div class="spacer"></div>
 
     <MapDisplay />
@@ -197,5 +206,11 @@ onUnmounted(() => {
   .v-all:hover {
     background: #96D1F2;
     color: #231F20;
+  }
+
+  .disclamer {
+    display: block;
+    font-size: 14px;
+    color: #6e6e6e;
   }
 </style>
